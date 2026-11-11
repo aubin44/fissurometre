@@ -458,7 +458,7 @@
   .forecast-btn::before { width: 9px; height: 9px; border: 2px dotted currentColor; border-radius: 50%; }
   .forecast-btn.active { border-color: #9B5DE5; }
   .forecast-btn.active::before { border-color: #9B5DE5; }
-  .temp-btn::before { width: 12px; border-top: 2px dashed #E23B3B; }
+  .temp-btn::before { width: 12px; border-top: 2px solid #E23B3B; }
   .temp-btn.active { border-color: #E23B3B; }
   .download-btn-like { font: 600 0.8rem 'Barlow', sans-serif; background: transparent; color: var(--stone); border: 1.5px solid var(--line); border-radius: 999px; padding: 4px 11px; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; min-height: 30px; }
   .download-btn-like:hover { color: var(--ink); border-color: var(--ink); }
@@ -573,6 +573,8 @@
   .seg-caption { font-size: 0.8rem; font-weight: 600; color: var(--stone); margin-left: 6px; }
   .demo-value-day { font-size: 0.98rem; color: var(--stone); font-weight: 600; margin-bottom: 2px; }
   .demo-scale-day { margin-top: 2px; opacity: .8; }
+  .download-all { color: var(--ink); border-color: var(--ink); }
+  .download-all:hover { background: var(--ink); color: var(--paper); }
 </style>
 </head>
 <body>
@@ -700,19 +702,19 @@
     <ol class="steps">
       <li class="step">
         <svg class="step-ico" viewBox="0 0 56 56" aria-hidden="true" focusable="false"><path d="M6 46 10 20l14-8 16 4 10 14-2 16Z"/><path d="M27 13l-3 11 6 8-4 14"/><rect x="16" y="26" width="8" height="5" rx="1"/><rect x="32" y="27" width="8" height="5" rx="1"/><path d="M24 28.5h8"/></svg>
-        <div class="num">01 <span class="trail" data-cm="trail1"></span></div>
+        <div class="num">01</div>
         <h3 data-i18n="step1.title">Installation</h3>
         <p data-i18n="step1.desc">Le capteur est fixé de part et d'autre de la fissure, directement sur la roche.</p>
       </li>
       <li class="step">
         <svg class="step-ico" viewBox="0 0 56 56" aria-hidden="true" focusable="false"><rect x="16" y="30" width="24" height="16" rx="2"/><path d="M28 30V17"/><circle cx="28" cy="14" r="2.2"/><path d="M21 9a10 10 0 0 1 14 0M16 4.5a17 17 0 0 1 24 0"/><circle cx="22" cy="38" r="1.6"/><path d="M28 38h8"/></svg>
-        <div class="num">02 <span class="trail" data-cm="trail2"></span></div>
+        <div class="num">02</div>
         <h3 data-i18n="step2.title">Transmission</h3>
         <p data-i18n="step2.desc">La station enregistre l'écartement à l'intervalle choisi et transmet les données à distance.</p>
       </li>
       <li class="step">
         <svg class="step-ico" viewBox="0 0 56 56" aria-hidden="true" focusable="false"><path d="M6 26 50 8 40 46 28 36l-6 8-2-12Z"/><path d="M20 32 50 8"/></svg>
-        <div class="num">03 <span class="trail" data-cm="trail3"></span></div>
+        <div class="num">03</div>
         <h3 data-i18n="step3.title">Alerte</h3>
         <p data-i18n="step3.desc">Dès qu'une vitesse ou un déplacement dépasse le seuil défini, une alerte part automatiquement sur Telegram.</p>
       </li>
@@ -965,7 +967,7 @@ Position actuelle : 34,50 mm</div>
             <button type="button" class="chip-btn trend-btn active" data-chart="position" data-i18n="live.trendToggle">Tendance</button>
             <span class="forecast-combo"><button type="button" class="chip-btn forecast-btn" data-chart="position" data-i18n="live.forecastToggle">Prévision</button><span class="horizon-group" data-chart="position" role="group"><button type="button" class="hz-btn active" data-days="10">10 j</button><button type="button" class="hz-btn" data-days="30">30 j</button></span></span>
             <button type="button" class="chip-btn temp-btn" data-chart="position" data-i18n="live.tempToggle">Température</button>
-            <button type="button" class="download-btn" data-chart="position" title="Télécharger en XLSX"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v11m0 0 4-4m-4 4-4-4"/><path d="M4 17v3h16v-3"/></svg><span data-i18n="live.download">Excel</span></button>
+            <button type="button" class="download-btn download-all" data-chart="position" title="Position absolue et relative, batterie, vitesses — un fichier Excel"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v11m0 0 4-4m-4 4-4-4"/><path d="M4 17v3h16v-3"/></svg><span data-cm="dlAll">Télécharger tout (Excel)</span></button>
             <button type="button" class="reset-zoom-btn" data-chart="position" data-i18n="live.resetZoom">Réinitialiser le zoom</button>
           </div>
         </div>
@@ -999,7 +1001,6 @@ Position actuelle : 34,50 mm</div>
           <div class="toolbar-right">
             <button type="button" class="chip-btn vel-thr"><span data-cm="velThresholds">Seuils d'alerte</span></button>
             <button type="button" class="chip-btn vel-raw"><span data-cm="velRaw">Vitesse brute</span></button>
-            <button type="button" class="download-btn-like vel-dl" title="Télécharger en XLSX"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v11m0 0 4-4m-4 4-4-4"/><path d="M4 17v3h16v-3"/></svg><span data-i18n="live.download">Excel</span></button>
             <button type="button" class="reset-zoom-like vel-reset" data-i18n="live.resetZoom">Réinitialiser le zoom</button>
           </div>
         </div>
@@ -1026,7 +1027,6 @@ Position actuelle : 34,50 mm</div>
           <div class="toolbar-right">
             <button type="button" class="chip-btn trend-btn active" data-chart="battery" data-i18n="live.trendToggle">Tendance</button>
             <span class="forecast-combo"><button type="button" class="chip-btn forecast-btn" data-chart="battery" data-i18n="live.forecastToggle">Prévision</button><span class="horizon-group" data-chart="battery" role="group"><button type="button" class="hz-btn active" data-days="10">10 j</button><button type="button" class="hz-btn" data-days="30">30 j</button></span></span>
-            <button type="button" class="download-btn" data-chart="battery" title="Télécharger en XLSX"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v11m0 0 4-4m-4 4-4-4"/><path d="M4 17v3h16v-3"/></svg><span data-i18n="live.download">Excel</span></button>
             <button type="button" class="reset-zoom-btn" data-chart="battery" data-i18n="live.resetZoom">Réinitialiser le zoom</button>
           </div>
         </div>
@@ -1161,7 +1161,10 @@ window.CM_UI = {
     velSubW: "Pente de la position sur les {w} précédant chaque mesure, en mm/h",
     velSampling: "Intervalle médian entre deux mesures : {dt}, soit environ {n} mesures par fenêtre.",
     velTooFew: "La fenêtre de {w} contient moins de 3 mesures (intervalle médian : {dt}) : choisissez une fenêtre plus longue.",
-    tempFcNote: "Pointillés rouges : prévision MétéoSuisse pour Fribourg/Grangeneuve (calcul du {run}), données libres.",
+    tempFcNote: "Tirets orange sur fond hachuré : prévision MétéoSuisse pour Fribourg/Grangeneuve (calcul du {run}). Trait rouge continu : températures mesurées.",
+    fcZone: "Prévision météo",
+    dlAll: "Télécharger tout (Excel)",
+    velRawNote: "Points gris : vitesse brute entre deux mesures successives ({out} hors de l'échelle).",
     fcWord: "prévision",
     velHint: "Glisser : zoomer sur une zone · Maj + glisser : déplacer · Ctrl + molette : zoom · pincer : zoom",
     velTitle: "Vitesse de déplacement",
@@ -1213,7 +1216,10 @@ window.CM_UI = {
     velSubW: "Steigung der Position über die {w} vor jeder Messung, in mm/h",
     velSampling: "Medianer Abstand zwischen zwei Messungen: {dt}, also etwa {n} Messungen pro Fenster.",
     velTooFew: "Das Fenster von {w} enthält weniger als 3 Messungen (medianer Abstand: {dt}): bitte ein längeres Fenster wählen.",
-    tempFcNote: "Rot gepunktet: MeteoSchweiz-Prognose für Freiburg/Grangeneuve (Lauf vom {run}), offene Daten.",
+    tempFcNote: "Orange gestrichelt auf schraffiertem Hintergrund: MeteoSchweiz-Prognose für Freiburg/Grangeneuve (Lauf vom {run}). Rote durchgezogene Linie: gemessene Temperaturen.",
+    fcZone: "Wetterprognose",
+    dlAll: "Alles herunterladen (Excel)",
+    velRawNote: "Graue Punkte: Rohgeschwindigkeit zwischen zwei aufeinanderfolgenden Messungen ({out} außerhalb der Skala).",
     fcWord: "Prognose",
     velHint: "Ziehen: Bereich zoomen · Umschalt + Ziehen: verschieben · Strg + Mausrad: Zoom · Zwei Finger: Zoom",
     velTitle: "Verschiebungsgeschwindigkeit",
@@ -1265,7 +1271,10 @@ window.CM_UI = {
     velSubW: "Slope of the position over the {w} before each reading, in mm/h",
     velSampling: "Median interval between two readings: {dt}, i.e. about {n} readings per window.",
     velTooFew: "The {w} window holds fewer than 3 readings (median interval: {dt}): choose a longer window.",
-    tempFcNote: "Red dotted line: MeteoSwiss forecast for Fribourg/Grangeneuve (run of {run}), open data.",
+    tempFcNote: "Orange dashes on a hatched background: MeteoSwiss forecast for Fribourg/Grangeneuve (run of {run}). Solid red line: measured temperatures.",
+    fcZone: "Weather forecast",
+    dlAll: "Download everything (Excel)",
+    velRawNote: "Grey dots: raw rate between two successive readings ({out} off the scale).",
     fcWord: "forecast",
     velHint: "Drag: zoom into an area · Shift + drag: pan · Ctrl + wheel: zoom · pinch: zoom",
     velTitle: "Displacement rate",
@@ -2737,7 +2746,7 @@ window.CM_UI = {
       borderColor: TEMP_COLOR,
       backgroundColor: 'transparent',
       borderWidth: 1.5,
-      borderDash: [4, 3],
+      borderDash: [],
       pointRadius: 0,
       pointHoverRadius: 3,
       tension: 0.35,
@@ -2752,6 +2761,49 @@ window.CM_UI = {
   // (scripts/fetch_forecast.py) from the MeteoSwiss local-forecast open data.
   var TEMP_FC_URLS = ['data/forecast-gra.json', 'https://raw.githubusercontent.com/aubin44/fissurometre/main/data/forecast-gra.json'];
   var tempFc = { status: 'idle', data: [], run: null };
+  var TEMP_FC_COLOR = '#E0901A';
+  // shaded "weather forecast" zone behind the forecast part of the position chart
+  var tempFcZonePlugin = {
+    id: 'cmTempFcZone',
+    beforeDatasetsDraw: function(chart) {
+      var ds = null;
+      for (var i = 0; i < chart.data.datasets.length; i++) {
+        if (chart.data.datasets[i].label === 'tempfc') { ds = chart.data.datasets[i]; break; }
+      }
+      if (!ds || !ds.data || !ds.data.length || !chart.scales.x) return;
+      var a = chart.chartArea, xs = chart.scales.x;
+      var x0 = Math.max(a.left, xs.getPixelForValue(ds.data[0].x.getTime()));
+      var x1 = Math.min(a.right, xs.getPixelForValue(ds.data[ds.data.length - 1].x.getTime()));
+      if (x1 <= x0) return;
+      var ctx = chart.ctx;
+      ctx.save();
+      ctx.fillStyle = 'rgba(224,144,26,0.07)';
+      ctx.fillRect(x0, a.top, x1 - x0, a.bottom - a.top);
+      // light diagonal hatching
+      ctx.beginPath();
+      ctx.rect(x0, a.top, x1 - x0, a.bottom - a.top);
+      ctx.clip();
+      ctx.strokeStyle = 'rgba(224,144,26,0.16)';
+      ctx.lineWidth = 1;
+      for (var hx = x0 - (a.bottom - a.top); hx < x1; hx += 9) {
+        ctx.beginPath(); ctx.moveTo(hx, a.bottom); ctx.lineTo(hx + (a.bottom - a.top), a.top); ctx.stroke();
+      }
+      ctx.restore();
+      ctx.save();
+      ctx.strokeStyle = TEMP_FC_COLOR;
+      ctx.setLineDash([3, 3]);
+      ctx.beginPath(); ctx.moveTo(Math.round(x0) + 0.5, a.top); ctx.lineTo(Math.round(x0) + 0.5, a.bottom); ctx.stroke();
+      ctx.setLineDash([]);
+      var L = document.documentElement.lang || 'fr';
+      var d = (window.CM_UI && (window.CM_UI[L] || window.CM_UI.fr)) || {};
+      ctx.fillStyle = TEMP_FC_COLOR;
+      ctx.font = "600 11px 'Barlow', sans-serif";
+      ctx.textAlign = 'left';
+      if (x1 - x0 > 70) ctx.fillText(d.fcZone || '', x0 + 6, a.top + 13);
+      ctx.restore();
+    }
+  };
+  Chart.register(tempFcZonePlugin);
   function loadTempForecast() {
     if (tempFc.status === 'loading' || tempFc.status === 'ok') return Promise.resolve(tempFc);
     tempFc.status = 'loading';
@@ -2783,12 +2835,14 @@ window.CM_UI = {
     return {
       label: 'tempfc',
       data: fcData,
-      borderColor: TEMP_COLOR,
+      borderColor: TEMP_FC_COLOR,
       backgroundColor: 'transparent',
-      borderWidth: 1.8,
-      borderDash: [2, 3],
-      pointRadius: 0,
-      pointHoverRadius: 3,
+      borderWidth: 2.2,
+      borderDash: [7, 4],
+      pointRadius: function(c) { var t = c.raw && c.raw.x ? c.raw.x.getUTCHours() : 1; return t % 6 === 0 ? 2.5 : 0; },
+      pointBackgroundColor: TEMP_FC_COLOR,
+      pointBorderWidth: 0,
+      pointHoverRadius: 4,
       tension: 0.35,
       cubicInterpolationMode: 'monotone',
       spanGaps: true,
@@ -2810,7 +2864,7 @@ window.CM_UI = {
     var L = document.documentElement.lang || 'fr';
     var d = window.CM_UI[L] || window.CM_UI.fr;
     var run = tempFc.run ? formatLiveDate(tempFc.run) : '';
-    return '<br><span class="trend-note" style="color:' + TEMP_COLOR + '">' + (d.tempFcNote || '').replace('{run}', run) + '</span>';
+    return '<br><span class="trend-note" style="color:' + TEMP_FC_COLOR + '">' + (d.tempFcNote || '').replace('{run}', run) + '</span>';
   }
 
   function tempAxisConfig(colors) {
@@ -3778,7 +3832,7 @@ window.CM_UI = {
 
   document.querySelectorAll('.download-btn').forEach(function(btn) {
     btn.addEventListener('click', function() {
-      downloadXlsx(btn.getAttribute('data-chart'));
+      downloadAllXlsx();
     });
   });
 
@@ -3863,7 +3917,7 @@ window.CM_UI = {
     var out = [];
     for (var i = 1; i < pts.length; i++) {
       var dt = (pts[i].x.getTime() - pts[i - 1].x.getTime()) / HOUR_MS;
-      if (dt > 0) out.push({ x: pts[i].x, y: (pts[i].y - pts[i - 1].y) / dt });
+      if (dt >= 1 / 60) out.push({ x: pts[i].x, y: (pts[i].y - pts[i - 1].y) / dt });
     }
     return out;
   }
@@ -3896,6 +3950,7 @@ window.CM_UI = {
         ctx.beginPath(); ctx.moveTo(a.left, p0); ctx.lineTo(a.right, p0); ctx.stroke();
         ctx.globalAlpha = 1;
       }
+      if (!vel.showThr) { ctx.restore(); return; }
       var cols = [cssVar('--lv1', '#E5B21F'), cssVar('--lv2', '#DF7A22'), cssVar('--lv3', '#C42F29')];
       VEL_THRESHOLDS.forEach(function(v, k) {
         if (v > y.max || v < y.min) return;
@@ -3961,8 +4016,6 @@ window.CM_UI = {
     } else {
       txt = '';
     }
-    if (footEl) footEl.textContent = (txt ? txt + ' ' : '') + velUi('velMethod').replace('{w}', velWindowLabel()) +
-      (medStep ? ' ' + velUi('velSampling').replace('{dt}', dtTxt).replace('{n}', String(perWin)) : '');
 
     var colors = getColors();
     var color = cssVar('--data-vel', '#A8431B');
@@ -3971,11 +4024,20 @@ window.CM_UI = {
       borderWidth: 2, pointRadius: shownVals.length < 60 ? 2 : 0, pointHoverRadius: 4,
       tension: 0.25, cubicInterpolationMode: 'monotone', spanGaps: false, order: 1
     }];
+    var rawShown = [], rawOut = 0, rawLo = null, rawHi = null;
     if (vel.showRaw) {
+      rawShown = filterByRange(computeRawVelocity(pts), vel.range);
+      // robust scale: 2nd-98th percentile of the raw rates, so a few spikes
+      // do not flatten everything (points beyond are clipped and counted)
+      var sorted = rawShown.map(function(p) { return p.y; }).sort(function(a, b) { return a - b; });
+      if (sorted.length) {
+        rawLo = sorted[Math.floor(sorted.length * 0.02)];
+        rawHi = sorted[Math.min(sorted.length - 1, Math.ceil(sorted.length * 0.98) - 1)];
+      }
       datasets.push({
-        label: 'raw', data: filterByRange(computeRawVelocity(pts), vel.range),
-        borderColor: withAlpha(colors.ink, 0.45), backgroundColor: 'transparent', borderWidth: 1,
-        pointRadius: 0, tension: 0, spanGaps: true, order: 2
+        label: 'raw', data: rawShown, showLine: false,
+        borderColor: 'transparent', backgroundColor: withAlpha(colors.ink, 0.38),
+        pointRadius: 1.8, pointHoverRadius: 3, pointBorderWidth: 0, order: 2
       });
     }
     var first = shown[0].x.getTime(), lastT = shown[shown.length - 1].x.getTime();
@@ -3986,7 +4048,21 @@ window.CM_UI = {
       grid: { color: colors.grid }, border: { display: false },
       title: { display: true, text: 'mm/h', color: colors.ink, font: { family: 'Barlow', size: 11, weight: '600' } }
     };
-    if (vel.showThr) { yScale.max = VEL_THRESHOLDS[2] * 1.12; yScale.min = Math.min(0, minVal * 1.1); }
+    if (vel.showThr) {
+      yScale.max = VEL_THRESHOLDS[2] * 1.12;
+      yScale.min = Math.min(0, minVal * 1.1, rawLo !== null ? rawLo : 0);
+    } else if (vel.showRaw && rawLo !== null) {
+      var lo = Math.min(minVal, rawLo), hi = Math.max(maxVal, rawHi);
+      var padY = (hi - lo) * 0.08 || 0.001;
+      yScale.min = lo - padY;
+      yScale.max = hi + padY;
+    }
+    if (vel.showRaw && yScale.min !== undefined) {
+      rawShown.forEach(function(p) { if (p.y < yScale.min || p.y > yScale.max) rawOut++; });
+    }
+    if (footEl) footEl.textContent = (txt ? txt + ' ' : '') + velUi('velMethod').replace('{w}', velWindowLabel()) +
+      (medStep ? ' ' + velUi('velSampling').replace('{dt}', dtTxt).replace('{n}', String(perWin)) : '') +
+      (vel.showRaw ? ' ' + velUi('velRawNote').replace('{out}', String(rawOut)) : '');
     vel.chart = new Chart(velCanvas.getContext('2d'), {
       type: 'line',
       data: { datasets: datasets },
@@ -4071,13 +4147,235 @@ window.CM_UI = {
     });
     var resetBtn = document.querySelector('.vel-reset');
     if (resetBtn) resetBtn.addEventListener('click', function() { renderVelocity(false); });
-    var dlBtn = document.querySelector('.vel-dl');
-    if (dlBtn) dlBtn.addEventListener('click', downloadVelocity);
     document.querySelectorAll('#positionModeGroup .mode-btn').forEach(function(btn) {
       btn.addEventListener('click', function() { setTimeout(function() { renderVelocity(false); }, 0); });
     });
     window.addEventListener('cm:langchange', function() { if (vel.points.length) renderVelocity(true); });
   }
+
+  // ---- complete Excel export (one workbook, several sheets) -----------------
+  // Position absolue / Position relative (+ GRA air temperature when available),
+  // battery voltage, displacement rates over 6 h / 24 h / 7 days + raw rate,
+  // and an "Infos" sheet describing the content and methods.
+  var XL_TEXT = {
+    fr: { info: 'Infos', infoKey: 'Rubrique', infoVal: 'Detail', abs: 'Position absolue', rel: 'Position relative', batt: 'Batterie', vel: 'Vitesses',
+          date: 'Date-heure (heure locale)', posAbs: 'Position absolue (mm)', posRel: 'Position relative (mm)',
+          temp: 'Temperature air GRA (degC)', volt: 'Tension batterie (V)',
+          v6: 'Vitesse 6 h (mm/h)', v24: 'Vitesse 24 h (mm/h)', v168: 'Vitesse 7 jours (mm/h)', vraw: 'Vitesse brute (mm/h)',
+          infoRows: [
+            ['Station', 'Crackmeter - Ermitage de la Madelaine (Fribourg)'],
+            ['Export', '{date}'],
+            ['Source des mesures', 'openSenseMap'],
+            ['Temperature', 'MeteoSuisse, station Fribourg/Grangeneuve (GRA), donnees OGD CC BY 4.0, valeur horaire la plus proche'],
+            ['Vitesses', 'Pente d\'une regression lineaire sur les mesures de position absolue des 6 h, 24 h ou 7 jours precedant chaque mesure'],
+            ['Vitesse brute', 'Difference entre deux mesures successives divisee par le temps ecoule'],
+            ['Seuils d\'alerte (demo)', '1 / 2 / 5 mm/h, soit 24 / 48 / 120 mm/jour']
+          ] },
+    de: { info: 'Infos', infoKey: 'Rubrik', infoVal: 'Detail', abs: 'Position absolut', rel: 'Position relativ', batt: 'Batterie', vel: 'Geschwindigkeiten',
+          date: 'Datum-Zeit (Ortszeit)', posAbs: 'Position absolut (mm)', posRel: 'Position relativ (mm)',
+          temp: 'Lufttemperatur GRA (degC)', volt: 'Batteriespannung (V)',
+          v6: 'Geschwindigkeit 6 h (mm/h)', v24: 'Geschwindigkeit 24 h (mm/h)', v168: 'Geschwindigkeit 7 Tage (mm/h)', vraw: 'Rohgeschwindigkeit (mm/h)',
+          infoRows: [
+            ['Station', 'Crackmeter - Einsiedelei Magdalena (Freiburg)'],
+            ['Export', '{date}'],
+            ['Messdaten', 'openSenseMap'],
+            ['Temperatur', 'MeteoSchweiz, Station Freiburg/Grangeneuve (GRA), OGD CC BY 4.0, naechster Stundenwert'],
+            ['Geschwindigkeiten', 'Steigung einer linearen Regression ueber die absoluten Positionsmessungen der 6 h, 24 h oder 7 Tage vor jeder Messung'],
+            ['Rohgeschwindigkeit', 'Differenz zweier aufeinanderfolgender Messungen geteilt durch die verstrichene Zeit'],
+            ['Alarmschwellen (Demo)', '1 / 2 / 5 mm/h, d.h. 24 / 48 / 120 mm/Tag']
+          ] },
+    en: { info: 'Info', infoKey: 'Item', infoVal: 'Detail', abs: 'Absolute position', rel: 'Relative position', batt: 'Battery', vel: 'Rates',
+          date: 'Date-time (local time)', posAbs: 'Absolute position (mm)', posRel: 'Relative position (mm)',
+          temp: 'Air temperature GRA (degC)', volt: 'Battery voltage (V)',
+          v6: 'Rate 6 h (mm/h)', v24: 'Rate 24 h (mm/h)', v168: 'Rate 7 days (mm/h)', vraw: 'Raw rate (mm/h)',
+          infoRows: [
+            ['Station', 'Crackmeter - Ermitage de la Madelaine (Fribourg)'],
+            ['Export', '{date}'],
+            ['Readings source', 'openSenseMap'],
+            ['Temperature', 'MeteoSwiss, Fribourg/Grangeneuve station (GRA), OGD CC BY 4.0, nearest hourly value'],
+            ['Rates', 'Slope of a linear regression over the absolute position readings of the 6 h, 24 h or 7 days before each reading'],
+            ['Raw rate', 'Difference between two successive readings divided by the elapsed time'],
+            ['Alert thresholds (demo)', '1 / 2 / 5 mm/h, i.e. 24 / 48 / 120 mm/day']
+          ] }
+  };
+
+  function colLetter(i) { return String.fromCharCode(65 + i); }
+
+  // sheets: [{ name, headers: [..], rows: [[Date|string, number|string|null, ...]], widths: [..] }]
+  function buildWorkbook(sheets) {
+    var ST_HDR = 1, ST_DT = 2;
+    var sst = [], sstIndex = {};
+    function s(str) {
+      str = String(str);
+      if (!(str in sstIndex)) { sstIndex[str] = sst.length; sst.push(str); }
+      return sstIndex[str];
+    }
+    var sheetFiles = sheets.map(function(sh) {
+      var rows = '<row r="1">' + sh.headers.map(function(h, c) {
+        return '<c r="' + colLetter(c) + '1" s="' + ST_HDR + '" t="s"><v>' + s(h) + '</v></c>';
+      }).join('') + '</row>';
+      for (var i = 0; i < sh.rows.length; i++) {
+        var r = i + 2, row = sh.rows[i], cells = '';
+        for (var c = 0; c < row.length; c++) {
+          var v = row[c], ref = colLetter(c) + r;
+          if (v === null || v === undefined || (typeof v === 'number' && !isFinite(v))) continue;
+          if (v instanceof Date) cells += '<c r="' + ref + '" s="' + ST_DT + '"><v>' + excelSerial(v) + '</v></c>';
+          else if (typeof v === 'number') cells += '<c r="' + ref + '"><v>' + v + '</v></c>';
+          else cells += '<c r="' + ref + '" t="s"><v>' + s(v) + '</v></c>';
+        }
+        rows += '<row r="' + r + '">' + cells + '</row>';
+      }
+      var lastCol = colLetter(sh.headers.length - 1);
+      return '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' +
+        '<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">' +
+        '<dimension ref="A1:' + lastCol + (sh.rows.length + 1) + '"/>' +
+        '<sheetViews><sheetView workbookViewId="0">' +
+        '<pane ySplit="1" topLeftCell="A2" activePane="bottomLeft" state="frozen"/>' +
+        '</sheetView></sheetViews><sheetFormatPr defaultRowHeight="15"/>' +
+        '<cols>' + sh.widths.map(function(w, c) {
+          return '<col min="' + (c + 1) + '" max="' + (c + 1) + '" width="' + w + '" customWidth="1"/>';
+        }).join('') + '</cols>' +
+        '<sheetData>' + rows + '</sheetData></worksheet>';
+    });
+    var stylesXml = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' +
+      '<styleSheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">' +
+      '<numFmts count="1"><numFmt numFmtId="165" formatCode="yyyy\\-mm\\-dd\\ hh:mm:ss"/></numFmts>' +
+      '<fonts count="2"><font><sz val="11"/><name val="Calibri"/></font>' +
+      '<font><b/><sz val="11"/><name val="Calibri"/></font></fonts>' +
+      '<fills count="2"><fill><patternFill patternType="none"/></fill>' +
+      '<fill><patternFill patternType="gray125"/></fill></fills>' +
+      '<borders count="1"><border><left/><right/><top/><bottom/><diagonal/></border></borders>' +
+      '<cellStyleXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0"/></cellStyleXfs>' +
+      '<cellXfs count="3">' +
+      '<xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0"/>' +
+      '<xf numFmtId="0" fontId="1" fillId="0" borderId="0" xfId="0" applyFont="1"/>' +
+      '<xf numFmtId="165" fontId="0" fillId="0" borderId="0" xfId="0" applyNumberFormat="1"/>' +
+      '</cellXfs>' +
+      '<cellStyles count="1"><cellStyle name="Normal" xfId="0" builtinId="0"/></cellStyles></styleSheet>';
+    var sstXml = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' +
+      '<sst xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" count="' + sst.length +
+      '" uniqueCount="' + sst.length + '">' +
+      sst.map(function(t) { return '<si><t xml:space="preserve">' + xmlEscape(t) + '</t></si>'; }).join('') + '</sst>';
+    var ct = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' +
+      '<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">' +
+      '<Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/>' +
+      '<Default Extension="xml" ContentType="application/xml"/>' +
+      '<Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/>' +
+      sheets.map(function(sh, i) {
+        return '<Override PartName="/xl/worksheets/sheet' + (i + 1) + '.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/>';
+      }).join('') +
+      '<Override PartName="/xl/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml"/>' +
+      '<Override PartName="/xl/sharedStrings.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sharedStrings+xml"/>' +
+      '</Types>';
+    var relsRoot = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' +
+      '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">' +
+      '<Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="xl/workbook.xml"/>' +
+      '</Relationships>';
+    var wbXml = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' +
+      '<workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" ' +
+      'xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><sheets>' +
+      sheets.map(function(sh, i) {
+        return '<sheet name="' + xmlEscape(sh.name.slice(0, 31)) + '" sheetId="' + (i + 1) + '" r:id="rId' + (i + 1) + '"/>';
+      }).join('') + '</sheets></workbook>';
+    var n = sheets.length;
+    var wbRels = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' +
+      '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">' +
+      sheets.map(function(sh, i) {
+        return '<Relationship Id="rId' + (i + 1) + '" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet' + (i + 1) + '.xml"/>';
+      }).join('') +
+      '<Relationship Id="rId' + (n + 1) + '" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/>' +
+      '<Relationship Id="rId' + (n + 2) + '" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/sharedStrings" Target="sharedStrings.xml"/>' +
+      '</Relationships>';
+    var entries = [
+      { name: '[Content_Types].xml', data: ct },
+      { name: '_rels/.rels', data: relsRoot },
+      { name: 'xl/workbook.xml', data: wbXml },
+      { name: 'xl/_rels/workbook.xml.rels', data: wbRels },
+      { name: 'xl/styles.xml', data: stylesXml },
+      { name: 'xl/sharedStrings.xml', data: sstXml }
+    ];
+    sheetFiles.forEach(function(xml, i) { entries.push({ name: 'xl/worksheets/sheet' + (i + 1) + '.xml', data: xml }); });
+    return buildZip(entries);
+  }
+
+  function buildAllSheets(tempData) {
+    var L = (document.documentElement.lang || 'fr').toLowerCase();
+    var T = XL_TEXT[L] || XL_TEXT.fr;
+    var raw = store.position.points || [];
+    var absPts = raw.filter(function(p) { return typeof p.abs === 'number' && isFinite(p.abs); }).map(function(p) { return { x: p.x, y: p.abs }; });
+    var relPts = raw.filter(function(p) { return typeof p.rel === 'number' && isFinite(p.rel); }).map(function(p) { return { x: p.x, y: p.rel }; });
+    var battPts = store.battery.points || [];
+    var withTemp = !!(tempData && tempData.length);
+    // nearest hourly temperature, only if a reading exists within 90 minutes
+    function tempAt(t) {
+      if (!withTemp) return null;
+      var lo = 0, hi = tempData.length - 1;
+      while (lo < hi) { var mid = (lo + hi) >> 1; if (tempData[mid].x.getTime() < t) lo = mid + 1; else hi = mid; }
+      var best = tempData[lo];
+      if (lo > 0 && Math.abs(tempData[lo - 1].x.getTime() - t) < Math.abs(best.x.getTime() - t)) best = tempData[lo - 1];
+      return Math.abs(best.x.getTime() - t) <= 90 * 60000 ? best.y : null;
+    }
+    function r6(v) { return (typeof v === 'number' && isFinite(v)) ? Math.round(v * 1e6) / 1e6 : null; }
+    var sheets = [];
+    var d = new Date();
+    sheets.push({
+      name: T.info, headers: [T.infoKey, T.infoVal], widths: [26, 110],
+      rows: T.infoRows.map(function(r) {
+        return [r[0], r[1].replace('{date}', pad4(d.getFullYear()) + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate()) + ' ' + pad(d.getHours()) + ':' + pad(d.getMinutes()))];
+      })
+    });
+    function posSheet(name, label, pts) {
+      return {
+        name: name,
+        headers: withTemp ? [T.date, label, T.temp] : [T.date, label],
+        widths: withTemp ? [20, 24, 26] : [20, 24],
+        rows: pts.map(function(p) { return withTemp ? [p.x, p.y, tempAt(p.x.getTime())] : [p.x, p.y]; })
+      };
+    }
+    if (absPts.length) sheets.push(posSheet(T.abs, T.posAbs, absPts));
+    if (relPts.length) sheets.push(posSheet(T.rel, T.posRel, relPts));
+    if (battPts.length) sheets.push({ name: T.batt, headers: [T.date, T.volt], widths: [20, 22], rows: battPts.map(function(p) { return [p.x, p.y]; }) });
+    var base = absPts.length ? absPts : relPts;
+    if (base.length) {
+      var maps = [6, 24, 168].map(function(h) {
+        var m = {};
+        computeVelocity(base, h * HOUR_MS).forEach(function(p) { if (p.y !== null) m[p.x.getTime()] = p.y; });
+        return m;
+      });
+      var rawMap = {};
+      computeRawVelocity(base).forEach(function(p) { rawMap[p.x.getTime()] = p.y; });
+      sheets.push({
+        name: T.vel, headers: [T.date, T.v6, T.v24, T.v168, T.vraw], widths: [20, 20, 20, 22, 22],
+        rows: base.map(function(p) {
+          var t = p.x.getTime();
+          return [p.x, r6(maps[0][t]), r6(maps[1][t]), r6(maps[2][t]), r6(rawMap[t])];
+        })
+      });
+    }
+    return sheets;
+  }
+
+  function downloadAllXlsx() {
+    if (!(store.position.points || []).length && !(store.battery.points || []).length) return;
+    function emit(tempData) {
+      var blob = buildWorkbook(buildAllSheets(tempData));
+      var url = URL.createObjectURL(blob);
+      var a = document.createElement('a');
+      var d = new Date();
+      a.href = url;
+      a.download = 'crackmeter-ermitage-' + pad4(d.getFullYear()) + pad(d.getMonth() + 1) + pad(d.getDate()) + '.xlsx';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      setTimeout(function() { URL.revokeObjectURL(url); }, 5000);
+    }
+    if (typeof loadTempSeries === 'function') {
+      loadTempSeries().then(function(td) { emit(td && td.length ? td : null); }).catch(function() { emit(null); });
+    } else {
+      emit(null);
+    }
+  }
+  window.CM_buildAllSheets = buildAllSheets;
   window.CrackmeterLive = { store: store, posMode: posMode, refresh: refreshAll, liveMeta: liveMeta };
   refreshAll();
   setInterval(refreshAll, POLL_INTERVAL);
