@@ -1,0 +1,40 @@
+name: Prévision température MétéoSuisse (GRA)
+ 
+# Every 3 hours: extract the MeteoSwiss local temperature forecast for the
+# Fribourg / Grangeneuve station into data/forecast-gra.json (a few kB),
+# which the page overlays on the position chart.
+on:
+  schedule:
+    - cron: "23 */3 * * *"
+  workflow_dispatch:
+ 
+permissions:
+  contents: write
+ 
+concurrency:
+  group: meteo-forecast
+  cancel-in-progress: false
+ 
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Extract the forecast
+        run: python scripts/fetch_forecast.py --out data/forecast-gra.json
+      - name: Commit if changed
+        run: |
+          if [ -n "$(git status --porcelain data/)" ]; then
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add data/forecast-gra.json
+            git commit -m "Prévision température GRA (MétéoSuisse)"
+            git push
+          else
+            echo "no change"
+          fi
+ 
