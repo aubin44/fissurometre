@@ -5,9 +5,10 @@ MeteoSwiss publishes its local forecasts as Open Government Data (STAC collectio
 ``ch.meteoschweiz.ogd-local-forecasting``). Each hourly run ships one CSV per
 parameter covering *every* forecast point in Switzerland (tens of MB), which is
 far too heavy for a web page. This script, run by a scheduled GitHub Action,
-downloads the latest ``tre200h0`` file (hourly mean air temperature 2 m above
-ground), keeps only the requested point and the next few days, and writes
-``data/forecast-gra.json`` that the page can load in a few kilobytes.
+downloads the latest hourly air temperature files (``tre200h0`` = mean,
+``treq10h0`` / ``treq90h0`` = 10 % and 90 % quantiles, i.e. the official
+uncertainty range), keeps only the requested point over the whole available
+horizon, and writes ``data/forecast-gra.json`` that the page loads in a few kB.
 
 Source: MeteoSwiss (CC BY 4.0) — https://opendatadocs.meteoswiss.ch/e-forecast-data/e4-local-forecast-data
 Only the Python standard library is used.
@@ -22,8 +23,7 @@ import sys
 import urllib.request
 
 STAC_ITEMS = "https://data.geo.admin.ch/api/stac/v1/collections/ch.meteoschweiz.ogd-local-forecasting/items"
-PARAM = "tre200h0"
-ASSET_RE = re.compile(r"\.(\d{12})\." + PARAM + r"\.csv$")
+PARAMS = ["tre200h0", "treq10h0", "treq90h0"]   # mean, 10 % quantile, 90 % quantile
 UA = {"User-Agent": "crackmeter-forecast/1.0 (+https://github.com/aubin44/fissurometre)"}
 
 
@@ -32,8 +32,13 @@ def get_json(url):
         return json.load(r)
 
 
-def latest_asset(now):
-    """Return (run_time, href) of the most recent tre200h0 file, looking at today's and earlier items."""
+def asset_re(param):
+    return re.compile(r"\.(\d{12})\." + param + r"\.csv$")
+
+
+def latest_asset(now, param):
+    """Return (run_time, href) of the most recent file of one parameter, looking at today's and earlier items."""
+    ASSET_RE = asset_re(param)
     candidates = []
     for back in range(0, 3):
         day = (now - dt.timedelta(days=back)).strftime("%Y%m%d")
@@ -64,7 +69,7 @@ def latest_asset(now):
                 break
             url = nxt[0]
     if not candidates:
-        raise SystemExit("no %s asset found in the STAC collection" % PARAM)
+        raise SystemExit("no %s asset found in the STAC collection" % param)
     run, href = max(candidates)
     return dt.datetime.strptime(run, "%Y%m%d%H%M").replace(tzinfo=dt.timezone.utc), href
 
@@ -79,7 +84,7 @@ def parse_time(s):
     return None
 
 
-def extract(stream, point_id, point_type_id, start, end):
+def extract(stream, point_id, point_type_id, start, end, param):
     """Read the semicolon-separated CSV and keep the rows of one point between start and end (UTC)."""
     text = io.TextIOWrapper(stream, encoding="latin-1", newline="")
     header = None
@@ -94,7 +99,7 @@ def extract(stream, point_id, point_type_id, start, end):
             try:
                 i_pid = header.index("point_id")
                 i_ptype = header.index("point_type_id")
-                i_val = header.index(PARAM)
+                i_val = header.index(param)
             except ValueError:
                 raise SystemExit("unexpected CSV header: %s" % line)
             i_time = next((header.index(c) for c in ("date", "reference_timestamp", "time", "datetime") if c in header), None)
@@ -122,43 +127,65 @@ def main():
     ap.add_argument("--point-id", default="14", help="MeteoSwiss point_id (14 = Fribourg / Grangeneuve, GRA)")
     ap.add_argument("--point-type-id", default="1", help="1 = weather station")
     ap.add_argument("--station", default="GRA")
-    ap.add_argument("--hours", type=int, default=72, help="forecast horizon kept in the JSON")
+    ap.add_argument("--hours", type=int, default=0, help="forecast horizon kept in the JSON (0 = everything available)")
     ap.add_argument("--out", default="data/forecast-gra.json")
-    ap.add_argument("--csv", help="read this local CSV instead of downloading (for tests)")
+    ap.add_argument("--csv", nargs="+", help="local CSV files (mean, q10, q90) instead of downloading (tests)")
     ap.add_argument("--run", help="run time YYYYMMDDHHMM for --csv")
     ap.add_argument("--now", help="override 'now' as YYYYMMDDHHMM (tests)")
     a = ap.parse_args()
 
     now = parse_time(a.now) if a.now else dt.datetime.now(dt.timezone.utc)
-    if a.csv:
-        run = parse_time(a.run) if a.run else now
-        href = os.path.abspath(a.csv)
-        stream = open(a.csv, "rb")
-    else:
-        run, href = latest_asset(now)
-        stream = urllib.request.urlopen(urllib.request.Request(href, headers=UA), timeout=300)
     start = now.replace(minute=0, second=0, microsecond=0)
-    end = start + dt.timedelta(hours=a.hours)
-    with stream:
-        rows = extract(stream, a.point_id, a.point_type_id, start, end)
+    end = start + dt.timedelta(hours=a.hours) if a.hours > 0 else start + dt.timedelta(days=60)
+    series = {}
+    run = None
+    for k, param in enumerate(PARAMS):
+        try:
+            if a.csv:
+                if k >= len(a.csv):
+                    continue
+                prun = parse_time(a.run) if a.run else now
+                stream = open(a.csv[k], "rb")
+            else:
+                prun, href = latest_asset(now, param)
+                stream = urllib.request.urlopen(urllib.request.Request(href, headers=UA), timeout=300)
+            with stream:
+                series[param] = dict(extract(stream, a.point_id, a.point_type_id, start, end, param))
+            if param == PARAMS[0]:
+                run = prun
+        except SystemExit:
+            if param == PARAMS[0]:
+                raise
+            print("warning: %s unavailable, continuing without it" % param)
+    rows = sorted(series.get(PARAMS[0], {}).items())
     if len(rows) < 6:
         print("only %d rows found for point %s/%s, keeping the previous file" % (len(rows), a.point_type_id, a.point_id))
         return 0
+    q10 = series.get("treq10h0", {})
+    q90 = series.get("treq90h0", {})
+
+    def row(t, v):
+        r = [t.strftime("%Y-%m-%dT%H:%MZ"), round(v, 1)]
+        if t in q10 and t in q90:
+            r += [round(min(q10[t], q90[t]), 1), round(max(q10[t], q90[t]), 1)]
+        return r
+
     doc = {
         "source": "MeteoSwiss, local forecast (Open Government Data, CC BY 4.0)",
-        "parameter": PARAM,
+        "parameters": PARAMS,
+        "columns": ["time_utc", "mean", "q10", "q90"],
         "unit": "degC",
         "station": a.station,
         "point_id": int(a.point_id),
         "run": run.strftime("%Y-%m-%dT%H:%MZ"),
         "generated": dt.datetime.now(dt.timezone.utc).strftime("%Y-%m-%dT%H:%MZ"),
-        "data": [[t.strftime("%Y-%m-%dT%H:%MZ"), round(v, 1)] for t, v in rows],
+        "data": [row(t, v) for t, v in rows],
     }
     os.makedirs(os.path.dirname(a.out) or ".", exist_ok=True)
     with open(a.out, "w", encoding="utf-8") as f:
         json.dump(doc, f, ensure_ascii=False, separators=(",", ":"))
         f.write("\n")
-    print("wrote %s: %d values, run %s, from %s" % (a.out, len(rows), doc["run"], href))
+    print("wrote %s: %d values (%s to %s), run %s" % (a.out, len(rows), doc["data"][0][0], doc["data"][-1][0], doc["run"]))
     return 0
 
 

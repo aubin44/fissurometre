@@ -575,6 +575,77 @@
   .demo-scale-day { margin-top: 2px; opacity: .8; }
   .download-all { color: var(--ink); border-color: var(--ink); }
   .download-all:hover { background: var(--ink); color: var(--paper); }
+  .vel-temp::before { width: 12px; border-top: 2px solid #E23B3B; }
+  .vel-temp.active { border-color: #E23B3B; }
+  /* download menu */
+  .dl-wrap { position: relative; display: inline-flex; }
+  .dl-menu { position: absolute; top: calc(100% + 8px); right: 0; z-index: 20; width: 300px; max-width: calc(100vw - 32px); background: var(--panel); color: var(--ink); border: 2px solid var(--ink); border-radius: 12px; box-shadow: 6px 6px 0 var(--shadow); padding: 14px 16px 16px; display: grid; gap: 8px; }
+  .dl-menu[hidden] { display: none; }
+  .dl-title { font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 1.15rem; }
+  .dl-opt { display: flex; align-items: center; gap: 8px; font-weight: 600; font-size: 0.95rem; cursor: pointer; min-height: 32px; }
+  .dl-opt input { accent-color: var(--signal); width: 17px; height: 17px; }
+  .dl-range { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; padding-left: 25px; opacity: .55; }
+  .dl-menu.ranged .dl-range { opacity: 1; }
+  .dl-range label { display: grid; gap: 2px; font-size: 0.78rem; color: var(--stone); font-weight: 600; }
+  .dl-range input { font: 500 0.9rem 'Barlow', sans-serif; color: var(--ink); background: var(--paper); border: 1.5px solid var(--line); border-radius: 8px; padding: 6px 6px; min-height: 36px; width: 100%; }
+  .dl-note { margin: 2px 0 0; font-size: 0.8rem; color: var(--stone); line-height: 1.4; }
+  .dl-go { justify-content: center; margin-top: 4px; }
+
+  /* ---------- smartphone refinements ---------- */
+  .touch-only { display: none; }
+  @media (hover: none), (pointer: coarse) {
+    .chart-hint:not(.touch-only) { display: none; }
+    .touch-only { display: block; }
+  }
+  .live-charts > *, .chart-card, .chart-toolbar, .toolbar-left, .toolbar-right { min-width: 0; }
+  @media (max-width: 640px) {
+    .hero { padding-top: 26px; }
+    .hero-grid { gap: 22px; }
+    .hero-art { order: 0; max-width: 330px; margin: 4px auto 0; }
+    .hero h1 { font-size: 2rem; line-height: 1.05; }
+    .hero .lede { margin-top: 14px; }
+    .cta-row { margin-top: 20px; }
+    .cta-row .btn { flex: 1 1 auto; justify-content: center; }
+    .stat-strip-title { margin-top: 26px; }
+    .hero-live { left: 2%; bottom: 6%; padding: 8px 12px 9px; }
+    .hl-value { font-size: 1.55rem; }
+
+    .section-head { margin-bottom: 24px; }
+    .section-head h2 { font-size: 1.75rem; }
+
+    .chart-card { padding: 14px 12px 12px; border-radius: 10px; }
+    .chart-title { font-size: 1.3rem; }
+    .chart-value { font-size: 1.35rem; }
+    .chart-toolbar { gap: 8px; margin-bottom: 10px; }
+    .toolbar-left, .toolbar-right { width: 100%; gap: 6px; }
+    .toolbar-right {
+      flex-wrap: nowrap; overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none;
+      padding: 2px 24px 2px 0; margin-right: -12px;
+      -webkit-mask-image: linear-gradient(90deg, #000 85%, transparent);
+              mask-image: linear-gradient(90deg, #000 85%, transparent);
+    }
+    .toolbar-right::-webkit-scrollbar { display: none; }
+    .toolbar-right > * { flex-shrink: 0; }
+    .chip-btn, .download-btn, .mode-btn, .range-btn, .hz-btn { font-size: 0.8rem; min-height: 34px; }
+    .seg-caption { width: 100%; margin: 2px 0 -2px; }
+    .chart-canvas-wrap { height: 300px; }
+    .chart-canvas-wrap.voltage-canvas-wrap { height: 220px; }
+    .vel-canvas-wrap { height: 250px; }
+    .chart-foot, .trend-readout { font-size: 0.84rem; }
+
+    /* download menu becomes a bottom sheet above the tab bar */
+    .dl-menu {
+      position: fixed; top: auto; left: 12px; right: 12px; width: auto; max-width: none;
+      bottom: calc(80px + env(safe-area-inset-bottom)); z-index: 60;
+    }
+    .dl-range input { min-height: 42px; font-size: 1rem; }
+    .dl-go { min-height: 46px; }
+
+    .station-board { margin-bottom: 22px; }
+    .pulse-cell dd.big { font-size: 2rem; }
+    .pulse-cell dd { font-size: 1.3rem; }
+    .qr-row img { width: 64px; height: 64px; }
+  }
 </style>
 </head>
 <body>
@@ -967,7 +1038,20 @@ Position actuelle : 34,50 mm</div>
             <button type="button" class="chip-btn trend-btn active" data-chart="position" data-i18n="live.trendToggle">Tendance</button>
             <span class="forecast-combo"><button type="button" class="chip-btn forecast-btn" data-chart="position" data-i18n="live.forecastToggle">Prévision</button><span class="horizon-group" data-chart="position" role="group"><button type="button" class="hz-btn active" data-days="10">10 j</button><button type="button" class="hz-btn" data-days="30">30 j</button></span></span>
             <button type="button" class="chip-btn temp-btn" data-chart="position" data-i18n="live.tempToggle">Température</button>
-            <button type="button" class="download-btn download-all" data-chart="position" title="Position absolue et relative, batterie, vitesses — un fichier Excel"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v11m0 0 4-4m-4 4-4-4"/><path d="M4 17v3h16v-3"/></svg><span data-cm="dlAll">Télécharger tout (Excel)</span></button>
+            <span class="dl-wrap">
+              <button type="button" class="download-btn download-all" data-chart="position" aria-haspopup="dialog" aria-expanded="false" aria-controls="dlMenu"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v11m0 0 4-4m-4 4-4-4"/><path d="M4 17v3h16v-3"/></svg><span data-cm="dlBtn">Téléchargement</span></button>
+              <div class="dl-menu" id="dlMenu" role="dialog" aria-label="Téléchargement" hidden>
+                <div class="dl-title" data-cm="dlTitle">Fichier Excel</div>
+                <label class="dl-opt"><input type="radio" name="dlScope" value="all" checked> <span data-cm="dlAllData">Toutes les données</span></label>
+                <label class="dl-opt"><input type="radio" name="dlScope" value="range"> <span data-cm="dlRange">Une période</span></label>
+                <div class="dl-range">
+                  <label><span data-cm="dlFrom">Du</span><input type="date" id="dlFrom"></label>
+                  <label><span data-cm="dlTo">Au</span><input type="date" id="dlTo"></label>
+                </div>
+                <p class="dl-note" data-cm="dlNote">Position absolue et relative, batterie, vitesses et température, plus une feuille avec toutes les mesures.</p>
+                <button type="button" class="btn dl-go"><span data-cm="dlGo">Télécharger</span></button>
+              </div>
+            </span>
             <button type="button" class="reset-zoom-btn" data-chart="position" data-i18n="live.resetZoom">Réinitialiser le zoom</button>
           </div>
         </div>
@@ -975,6 +1059,7 @@ Position actuelle : 34,50 mm</div>
         <div class="chart-foot" id="chartFootPosition" data-i18n="live.loading">Chargement des données…</div>
         <div class="trend-readout" id="trendPosition"></div>
         <div class="chart-hint" data-i18n="live.zoomHint">Glisser : sélectionner une zone (zoom + tendance) &middot; Maj + glisser : déplacer &middot; Ctrl + molette : zoom &middot; pincer : zoom</div>
+        <div class="chart-hint touch-only" data-cm="touchHint">Touchez le graphique pour lire les valeurs ; pincez pour zoomer.</div>
       </div>
       <div class="chart-card vel-card">
         <div class="chart-head">
@@ -1001,12 +1086,14 @@ Position actuelle : 34,50 mm</div>
           <div class="toolbar-right">
             <button type="button" class="chip-btn vel-thr"><span data-cm="velThresholds">Seuils d'alerte</span></button>
             <button type="button" class="chip-btn vel-raw"><span data-cm="velRaw">Vitesse brute</span></button>
+            <button type="button" class="chip-btn vel-temp"><span data-cm="velTemp">Température</span></button>
             <button type="button" class="reset-zoom-like vel-reset" data-i18n="live.resetZoom">Réinitialiser le zoom</button>
           </div>
         </div>
         <div class="chart-canvas-wrap vel-canvas-wrap"><canvas id="chartVelocity" class="chart-canvas"></canvas></div>
         <div class="chart-foot" id="chartFootVelocity" data-i18n="live.loading">Chargement des données…</div>
         <div class="chart-hint" data-cm="velHint">Glisser : zoomer sur une zone &middot; Maj + glisser : déplacer &middot; Ctrl + molette : zoom &middot; pincer : zoom</div>
+        <div class="chart-hint touch-only" data-cm="touchHint">Touchez le graphique pour lire les valeurs ; pincez pour zoomer.</div>
       </div>
       <div class="chart-card batt-card">
         <div class="chart-head">
@@ -1034,6 +1121,7 @@ Position actuelle : 34,50 mm</div>
         <div class="chart-foot" id="chartFootBattery" data-i18n="live.loading">Chargement des données…</div>
         <div class="trend-readout" id="trendBattery"></div>
         <div class="chart-hint" data-i18n="live.zoomHint">Glisser : sélectionner une zone (zoom + tendance) &middot; Maj + glisser : déplacer &middot; Ctrl + molette : zoom &middot; pincer : zoom</div>
+        <div class="chart-hint touch-only" data-cm="touchHint">Touchez le graphique pour lire les valeurs ; pincez pour zoomer.</div>
       </div>
     </div>
     <div class="panel-next"><button type="button" class="next-btn" data-tab-target="#couts" data-next-tab="#couts"><span class="next-label"></span><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" focusable="false" style="fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round"><path d="M5 12h13M13 6l6 6-6 6"/></svg></button></div>
@@ -1149,6 +1237,25 @@ window.CM_TAB_ICONS = {"peak": "<svg viewBox=\"0 0 24 24\" aria-hidden=\"true\" 
 /* ---------- UI strings added by the redesign (fr / de / en) ---------- */
 window.CM_UI = {
   fr: {
+    touchHint: "Touchez le graphique pour lire les valeurs ; pincez pour zoomer.",
+    dlBtn: "Téléchargement",
+    dlTitle: "Fichier Excel",
+    dlAllData: "Toutes les données",
+    dlRange: "Une période",
+    dlFrom: "Du",
+    dlTo: "Au",
+    dlNote: "Position absolue et relative, batterie, vitesses et température, plus une feuille avec toutes les mesures.",
+    dlGo: "Télécharger",
+    velTemp: "Température",
+    rdPosAbs: "Position absolue",
+    rdPosRel: "Position relative",
+    rdBatt: "Batterie",
+    rdVel: "Vitesse",
+    rdTrend: "Tendance",
+    rdForecast: "Prévision",
+    rdTemp: "Température",
+    rdTempFc: "Prévision météo",
+    rdRange: "10–90 % : {lo} à {hi}",
     note1: "* Extensible selon les besoins.",
     note2: "** Installation comprise, hors abonnement réseau de 48 CHF par an.",
     note3: "*** Selon l'intervalle de transmission choisi.",
@@ -1161,7 +1268,7 @@ window.CM_UI = {
     velSubW: "Pente de la position sur les {w} précédant chaque mesure, en mm/h",
     velSampling: "Intervalle médian entre deux mesures : {dt}, soit environ {n} mesures par fenêtre.",
     velTooFew: "La fenêtre de {w} contient moins de 3 mesures (intervalle médian : {dt}) : choisissez une fenêtre plus longue.",
-    tempFcNote: "Tirets orange sur fond hachuré : prévision MétéoSuisse pour Fribourg/Grangeneuve (calcul du {run}). Trait rouge continu : températures mesurées.",
+    tempFcNote: "Tirets orange sur fond hachuré : prévision MétéoSuisse pour Fribourg/Grangeneuve (calcul du {run}) ; la bande orange donne la fourchette 10–90 % de MétéoSuisse. Trait rouge continu : températures mesurées.",
     fcZone: "Prévision météo",
     dlAll: "Télécharger tout (Excel)",
     velRawNote: "Points gris : vitesse brute entre deux mesures successives ({out} hors de l'échelle).",
@@ -1204,6 +1311,25 @@ window.CM_UI = {
     next: "Suite : {tab}"
   },
   de: {
+    touchHint: "Diagramm antippen, um die Werte zu lesen; mit zwei Fingern zoomen.",
+    dlBtn: "Download",
+    dlTitle: "Excel-Datei",
+    dlAllData: "Alle Daten",
+    dlRange: "Ein Zeitraum",
+    dlFrom: "Von",
+    dlTo: "Bis",
+    dlNote: "Absolute und relative Position, Batterie, Geschwindigkeiten und Temperatur, plus ein Blatt mit allen Messungen.",
+    dlGo: "Herunterladen",
+    velTemp: "Temperatur",
+    rdPosAbs: "Position absolut",
+    rdPosRel: "Position relativ",
+    rdBatt: "Batterie",
+    rdVel: "Geschwindigkeit",
+    rdTrend: "Trend",
+    rdForecast: "Prognose",
+    rdTemp: "Temperatur",
+    rdTempFc: "Wetterprognose",
+    rdRange: "10–90 %: {lo} bis {hi}",
     note1: "* Je nach Bedarf erweiterbar.",
     note2: "** Installation inbegriffen, ohne Netzabo von 48 CHF pro Jahr.",
     note3: "*** Je nach gewähltem Übertragungsintervall.",
@@ -1216,7 +1342,7 @@ window.CM_UI = {
     velSubW: "Steigung der Position über die {w} vor jeder Messung, in mm/h",
     velSampling: "Medianer Abstand zwischen zwei Messungen: {dt}, also etwa {n} Messungen pro Fenster.",
     velTooFew: "Das Fenster von {w} enthält weniger als 3 Messungen (medianer Abstand: {dt}): bitte ein längeres Fenster wählen.",
-    tempFcNote: "Orange gestrichelt auf schraffiertem Hintergrund: MeteoSchweiz-Prognose für Freiburg/Grangeneuve (Lauf vom {run}). Rote durchgezogene Linie: gemessene Temperaturen.",
+    tempFcNote: "Orange gestrichelt auf schraffiertem Hintergrund: MeteoSchweiz-Prognose für Freiburg/Grangeneuve (Lauf vom {run}); das orange Band zeigt den 10–90-%-Bereich von MeteoSchweiz. Rote durchgezogene Linie: gemessene Temperaturen.",
     fcZone: "Wetterprognose",
     dlAll: "Alles herunterladen (Excel)",
     velRawNote: "Graue Punkte: Rohgeschwindigkeit zwischen zwei aufeinanderfolgenden Messungen ({out} außerhalb der Skala).",
@@ -1259,6 +1385,25 @@ window.CM_UI = {
     next: "Weiter: {tab}"
   },
   en: {
+    touchHint: "Touch the chart to read the values; pinch to zoom.",
+    dlBtn: "Download",
+    dlTitle: "Excel file",
+    dlAllData: "All data",
+    dlRange: "A period",
+    dlFrom: "From",
+    dlTo: "To",
+    dlNote: "Absolute and relative position, battery, rates and temperature, plus one sheet with every reading.",
+    dlGo: "Download",
+    velTemp: "Temperature",
+    rdPosAbs: "Absolute position",
+    rdPosRel: "Relative position",
+    rdBatt: "Battery",
+    rdVel: "Rate",
+    rdTrend: "Trend",
+    rdForecast: "Forecast",
+    rdTemp: "Temperature",
+    rdTempFc: "Weather forecast",
+    rdRange: "10–90 %: {lo} to {hi}",
     note1: "* Extendable as needed.",
     note2: "** Installation included, excluding the 48 CHF per year network subscription.",
     note3: "*** Depending on the chosen transmission interval.",
@@ -1271,7 +1416,7 @@ window.CM_UI = {
     velSubW: "Slope of the position over the {w} before each reading, in mm/h",
     velSampling: "Median interval between two readings: {dt}, i.e. about {n} readings per window.",
     velTooFew: "The {w} window holds fewer than 3 readings (median interval: {dt}): choose a longer window.",
-    tempFcNote: "Orange dashes on a hatched background: MeteoSwiss forecast for Fribourg/Grangeneuve (run of {run}). Solid red line: measured temperatures.",
+    tempFcNote: "Orange dashes on a hatched background: MeteoSwiss forecast for Fribourg/Grangeneuve (run of {run}); the orange band is the MeteoSwiss 10–90 % range. Solid red line: measured temperatures.",
     fcZone: "Weather forecast",
     dlAll: "Download everything (Excel)",
     velRawNote: "Grey dots: raw rate between two successive readings ({out} off the scale).",
@@ -2375,7 +2520,7 @@ window.CM_UI = {
       var ctx = chart.ctx;
       var act = chart.tooltip && chart.tooltip.getActiveElements ? chart.tooltip.getActiveElements() : [];
       ctx.save();
-      if (act && act.length && act[0].element) {
+      if (false && act && act.length && act[0].element) {
         var cx = act[0].element.x;
         if (cx >= area.left && cx <= area.right) {
           ctx.strokeStyle = withAlpha(ds.borderColor, 0.55);
@@ -2789,6 +2934,25 @@ window.CM_UI = {
         ctx.beginPath(); ctx.moveTo(hx, a.bottom); ctx.lineTo(hx + (a.bottom - a.top), a.top); ctx.stroke();
       }
       ctx.restore();
+      // 10-90 % range of the forecast (official MeteoSwiss quantiles)
+      var yt = chart.scales.yTemp;
+      var band = ds.data.filter(function(p) { return typeof p.lo === 'number' && typeof p.hi === 'number'; });
+      if (yt && band.length > 1) {
+        ctx.save();
+        ctx.beginPath();
+        ctx.rect(a.left, a.top, a.right - a.left, a.bottom - a.top);
+        ctx.clip();
+        ctx.beginPath();
+        band.forEach(function(p, k) {
+          var px = xs.getPixelForValue(p.x.getTime()), py = yt.getPixelForValue(p.hi);
+          if (k === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+        });
+        for (var k = band.length - 1; k >= 0; k--) ctx.lineTo(xs.getPixelForValue(band[k].x.getTime()), yt.getPixelForValue(band[k].lo));
+        ctx.closePath();
+        ctx.fillStyle = 'rgba(224,144,26,0.24)';
+        ctx.fill();
+        ctx.restore();
+      }
       ctx.save();
       ctx.strokeStyle = TEMP_FC_COLOR;
       ctx.setLineDash([3, 3]);
@@ -2809,7 +2973,11 @@ window.CM_UI = {
     tempFc.status = 'loading';
     function parse(doc) {
       var now = Date.now();
-      return ((doc && doc.data) || []).map(function(r) { return { x: new Date(r[0]), y: +r[1] }; })
+      return ((doc && doc.data) || []).map(function(r) {
+        var p = { x: new Date(r[0]), y: +r[1] };
+        if (r.length >= 4 && isFinite(+r[2]) && isFinite(+r[3])) { p.lo = +r[2]; p.hi = +r[3]; }
+        return p;
+      })
         .filter(function(p) { return isFinite(p.x.getTime()) && isFinite(p.y) && p.x.getTime() >= now - 2 * 3600000; });
     }
     // try the copy served with the page first, then the raw file on GitHub
@@ -2854,10 +3022,27 @@ window.CM_UI = {
     return (tempData && tempData.length && tempFc.status === 'ok' && tempFc.data.length) ? tempFc.data : null;
   }
   // make sure the time axis reaches the end of the temperature forecast
-  function extendForTempFc(max, tempData) {
+  function extendForTempFc(max, tempData, points) {
     var fc = tempFcFor(tempData);
     if (!fc) return max;
-    return Math.max(typeof max === 'number' ? max : 0, fc[fc.length - 1].x.getTime() + 3600000);
+    var end = fc[fc.length - 1].x.getTime() + 3600000;
+    if (points && points.length) {
+      var p0 = points[0].x.getTime(), p1 = points[points.length - 1].x.getTime();
+      end = Math.min(end, p1 + Math.max(p1 - p0, 24 * 3600000));
+    }
+    return Math.max(typeof max === 'number' ? max : 0, end);
+  }
+  function tempFcBandMin() {
+    if (tempFc.status !== 'ok') return undefined;
+    var m = Infinity;
+    tempFc.data.forEach(function(p) { m = Math.min(m, typeof p.lo === 'number' ? p.lo : p.y); });
+    return isFinite(m) ? Math.floor(m) : undefined;
+  }
+  function tempFcBandMax() {
+    if (tempFc.status !== 'ok') return undefined;
+    var m = -Infinity;
+    tempFc.data.forEach(function(p) { m = Math.max(m, typeof p.hi === 'number' ? p.hi : p.y); });
+    return isFinite(m) ? Math.ceil(m) : undefined;
   }
   function tempFcNote() {
     if (tempFc.status !== 'ok' || !window.CM_UI) return '';
@@ -2872,6 +3057,8 @@ window.CM_UI = {
       position: 'right',
       ticks: { color: TEMP_COLOR, font: { family: 'Barlow', size: 10 }, callback: function(v) { return v + '°C'; } },
       grid: { drawOnChartArea: false },
+      suggestedMin: tempFcBandMin(),
+      suggestedMax: tempFcBandMax(),
       title: { display: true, text: '°C (GRA)', color: TEMP_COLOR, font: { family: 'Barlow', size: 10 } }
     };
   }
@@ -3010,7 +3197,7 @@ window.CM_UI = {
           x: {
             type: 'time',
             min: bounds.min,
-            max: extendForTempFc(showForecast ? Math.max(bounds.max, points[points.length - 1].x.getTime() + forecastHorizonDays(null, key) * 24 * 60 * 60 * 1000) : bounds.max, tempData),
+            max: extendForTempFc(showForecast ? Math.max(bounds.max, points[points.length - 1].x.getTime() + forecastHorizonDays(null, key) * 24 * 60 * 60 * 1000) : bounds.max, tempData, points),
             time: {
               tooltipFormat: 'dd.MM.yyyy HH:mm',
               displayFormats: {
@@ -3115,7 +3302,7 @@ window.CM_UI = {
         chart._lastFullSpan = bounds.max - bounds.min;
       }
     }
-    if (tData) chart.options.scales.x.max = extendForTempFc(chart.options.scales.x.max, tData);
+    if (tData) chart.options.scales.x.max = extendForTempFc(chart.options.scales.x.max, tData, points);
     if (chart._selRange) {
       var sm = chart.options.scales.x.min, sx = chart.options.scales.x.max;
       if (chart._selRange.to < sm || chart._selRange.from > sx) chart._selRange = null;
@@ -3170,7 +3357,7 @@ window.CM_UI = {
         var delta = lastF.y - points[points.length - 1].y;
         var sign = delta >= 0 ? '+' : '\u2212';
         html += '<br><span style="color:#9B5DE5">&#9673; ' + i18nGet('live.forecastToggle') + ' (' + horizonDays + ' ' + i18nGet('live.forecastDays') + ')</span>' +
-          ' ' + sign + delta.toFixed(digits).replace('.', ',') + ' ' + unit + ' \u2192 ' +
+          ' ' + sign + Math.abs(delta).toFixed(digits).replace('.', ',') + ' ' + unit + ' \u2192 ' +
           lastF.y.toFixed(digits).replace('.', ',') + ' ' + unit +
           (fCone && fCone.length ? ' (\u00b1' + ((fCone[fCone.length - 1].hi - fCone[fCone.length - 1].lo) / 2).toFixed(digits).replace('.', ',') + ' ' + unit + ')' : '') + ' ' +
           i18nGet('msg.over') + ' ' + formatLabel(lastF.x) +
@@ -3832,7 +4019,7 @@ window.CM_UI = {
 
   document.querySelectorAll('.download-btn').forEach(function(btn) {
     btn.addEventListener('click', function() {
-      downloadAllXlsx();
+      toggleDlMenu();
     });
   });
 
@@ -3864,12 +4051,234 @@ window.CM_UI = {
   applyPosModeUI();
 
 
+  // ---- crosshair + readout ---------------------------------------------------
+  // Replaces the default tooltip: a vertical AND a horizontal line follow the
+  // cursor, the time and the value are shown on the axes, and a box lists the
+  // value of every visible curve at that time (measurements, trend, forecasts
+  // with their uncertainty, temperature and weather forecast), interpolated
+  // linearly between neighbouring points.
+  function cmUi(k) {
+    var L = (document.documentElement.lang || 'fr').toLowerCase();
+    var all = window.CM_UI || {};
+    var d = all[L] || all.fr || {};
+    return d[k] !== undefined ? d[k] : ((all.fr || {})[k] || '');
+  }
+  function cmNum(v, digits) { return v.toFixed(digits).replace('.', ','); }
+  function cmTime(v) { return v instanceof Date ? v.getTime() : (typeof v === 'number' ? v : new Date(v).getTime()); }
+  // value of a sorted {x, y} series at time t; null outside the series or across a long gap
+  function cmInterp(data, t, maxGapMs, field) {
+    field = field || 'y';
+    if (!data || !data.length) return null;
+    var n = data.length;
+    var t0 = cmTime(data[0].x), t1 = cmTime(data[n - 1].x);
+    if (t < t0 || t > t1) return null;
+    var lo = 0, hi = n - 1;
+    while (hi - lo > 1) { var mid = (lo + hi) >> 1; if (cmTime(data[mid].x) <= t) lo = mid; else hi = mid; }
+    var a = data[lo], b = data[hi];
+    var ta = cmTime(a.x), tb = cmTime(b.x);
+    var ya = a[field], yb = b[field];
+    if (typeof ya !== 'number' || !isFinite(ya)) return (typeof yb === 'number' && Math.abs(tb - t) < 1) ? yb : null;
+    if (tb === ta || typeof yb !== 'number' || !isFinite(yb)) return Math.abs(ta - t) < 1 ? ya : null;
+    if (maxGapMs && tb - ta > maxGapMs) return null;
+    return ya + (yb - ya) * (t - ta) / (tb - ta);
+  }
+  function cmChartKind(chart) {
+    var id = chart.canvas && chart.canvas.id;
+    return id === 'chartBattery' ? 'battery' : (id === 'chartVelocity' ? 'velocity' : 'position');
+  }
+  function cmDescribe(chart, ds, t) {
+    var kind = cmChartKind(chart);
+    var lab = ds.label;
+    var unit = kind === 'battery' ? 'V' : (kind === 'velocity' ? 'mm/h' : 'mm');
+    var digits = kind === 'battery' ? 3 : (kind === 'velocity' ? 4 : 3);
+    var fmt = function(v) {
+      if (kind === 'velocity' && window.CM_fmtRate) return window.CM_fmtRate(v, 4) + ' ' + unit;
+      return cmNum(v, digits) + ' ' + unit;
+    };
+    var gap6h = 6 * 3600000;
+    var v, extra = '';
+    if (lab === 'series') {
+      v = cmInterp(ds.data, t, gap6h);
+      if (v === null) return null;
+      var name = kind === 'battery' ? cmUi('rdBatt')
+        : (posMode() === 'relative' ? cmUi('rdPosRel') : cmUi('rdPosAbs'));
+      return { name: name, text: fmt(v), v: v, axis: 'y' };
+    }
+    if (lab === 'velocity') {
+      v = cmInterp(ds.data, t, gap6h);
+      if (v === null) return null;
+      return { name: cmUi('rdVel'), text: fmt(v) + '  (' + (window.CM_fmtRate ? window.CM_fmtRate(v * 24, 3) : cmNum(v * 24, 3)) + ' mm/' + cmUi('dayAbbr') + ')', v: v, axis: 'y' };
+    }
+    if (lab === 'trend') {
+      v = cmInterp(ds.data, t, 0);
+      if (v === null) return null;
+      return { name: cmUi('rdTrend'), text: fmt(v), v: v, axis: 'y' };
+    }
+    if (lab === 'forecast') {
+      v = cmInterp(ds.data, t, 0);
+      if (v === null) return null;
+      if (ds.cmCone) {
+        var cone = ds.cmCone.map(function(c) { return { x: c.x, y: (c.hi - c.lo) / 2 }; });
+        var half = cmInterp(cone, t, 0);
+        if (half !== null && half > 0) extra = ' ± ' + cmNum(half, digits);
+      }
+      return { name: cmUi('rdForecast'), text: fmt(v).replace(' ' + unit, extra + ' ' + unit), v: v, axis: 'y' };
+    }
+    if (lab === 'temp') {
+      v = cmInterp(ds.data, t, 3 * 3600000);
+      if (v === null) return null;
+      return { name: cmUi('rdTemp'), text: cmNum(v, 1) + ' °C', v: v, axis: 'yTemp' };
+    }
+    if (lab === 'tempfc') {
+      v = cmInterp(ds.data, t, 3 * 3600000);
+      if (v === null) return null;
+      var lo = cmInterp(ds.data, t, 3 * 3600000, 'lo'), hi = cmInterp(ds.data, t, 3 * 3600000, 'hi');
+      if (lo !== null && hi !== null) extra = '  (' + cmUi('rdRange').replace('{lo}', cmNum(lo, 1)).replace('{hi}', cmNum(hi, 1)) + ')';
+      return { name: cmUi('rdTempFc'), text: cmNum(v, 1) + ' °C' + extra, v: v, axis: 'yTemp' };
+    }
+    return null;
+  }
+  function cmRoundRect(ctx, x, y, w, h, r) {
+    ctx.beginPath();
+    ctx.moveTo(x + r, y); ctx.lineTo(x + w - r, y); ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+    ctx.lineTo(x + w, y + h - r); ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+    ctx.lineTo(x + r, y + h); ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+    ctx.lineTo(x, y + r); ctx.quadraticCurveTo(x, y, x + r, y);
+    ctx.closePath();
+  }
+  function cmBadge(ctx, text, x, y, align, color) {
+    ctx.font = "600 11px 'Barlow', sans-serif";
+    var w = ctx.measureText(text).width + 10, h = 18;
+    var bx = align === 'center' ? x - w / 2 : (align === 'right' ? x - w : x);
+    var by = y - h / 2;
+    ctx.fillStyle = color || 'rgba(24,34,38,0.92)';
+    cmRoundRect(ctx, bx, by, w, h, 4); ctx.fill();
+    ctx.fillStyle = '#FFFFFF';
+    ctx.textAlign = 'left'; ctx.textBaseline = 'middle';
+    ctx.fillText(text, bx + 5, y + 0.5);
+    return { x: bx, w: w };
+  }
+
+  var cursorPlugin = {
+    id: 'cmCursor',
+    afterEvent: function(chart, args) {
+      var e = args.event;
+      if (!e) return;
+      if (e.type === 'mouseout') {
+        if (chart.$cmCur) { chart.$cmCur = null; args.changed = true; }
+        return;
+      }
+      if (e.type !== 'mousemove' && e.type !== 'touchstart' && e.type !== 'touchmove' && e.type !== 'click') return;
+      var a = chart.chartArea;
+      if (!a) return;
+      var inside = e.x >= a.left && e.x <= a.right && e.y >= a.top && e.y <= a.bottom;
+      chart.$cmCur = inside ? { x: e.x, y: e.y } : null;
+      args.changed = true;
+    },
+    afterDraw: function(chart) {
+      var cur = chart.$cmCur, a = chart.chartArea, xs = chart.scales.x, ys = chart.scales.y;
+      if (!cur || !a || !xs || !ys) return;
+      var ctx = chart.ctx;
+      var t = xs.getValueForPixel(cur.x);
+      var ink = 'rgba(24,34,38,0.92)';
+      ctx.save();
+      // crosshair lines
+      ctx.strokeStyle = 'rgba(85,100,106,0.75)';
+      ctx.lineWidth = 1;
+      ctx.setLineDash([4, 3]);
+      ctx.beginPath();
+      ctx.moveTo(Math.round(cur.x) + 0.5, a.top); ctx.lineTo(Math.round(cur.x) + 0.5, a.bottom);
+      ctx.moveTo(a.left, Math.round(cur.y) + 0.5); ctx.lineTo(a.right, Math.round(cur.y) + 0.5);
+      ctx.stroke();
+      ctx.setLineDash([]);
+
+      // values of every visible curve at time t
+      var items = [];
+      for (var i = 0; i < chart.data.datasets.length; i++) {
+        if (!chart.isDatasetVisible(i)) continue;
+        var ds = chart.data.datasets[i];
+        var d = cmDescribe(chart, ds, t);
+        if (!d) continue;
+        d.color = typeof ds.borderColor === 'string' && ds.borderColor !== 'transparent' ? ds.borderColor : '#55646A';
+        var sc = chart.scales[d.axis] || ys;
+        var py = sc.getPixelForValue(d.v);
+        if (py >= a.top - 1 && py <= a.bottom + 1) {
+          ctx.fillStyle = d.color; ctx.strokeStyle = '#FFFFFF'; ctx.lineWidth = 1.5;
+          ctx.beginPath(); ctx.arc(cur.x, py, 3.5, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+        }
+        items.push(d);
+      }
+
+      // axis badges: time at the bottom, value(s) at the cursor height on the sides
+      var kind = cmChartKind(chart);
+      var yv = ys.getValueForPixel(cur.y);
+      var yTxt = kind === 'velocity'
+        ? (window.CM_fmtRate ? window.CM_fmtRate(yv, 4) : cmNum(yv, 4)) + ' mm/h'
+        : cmNum(yv, kind === 'battery' ? 3 : 3) + (kind === 'battery' ? ' V' : ' mm');
+      cmBadge(ctx, yTxt, a.left + 2, cur.y, 'left', ink);
+      if (chart.scales.yTemp && chart.scales.yTemp.options && chart.scales.yTemp.options.display !== false) {
+        var tv = chart.scales.yTemp.getValueForPixel(cur.y);
+        if (isFinite(tv)) cmBadge(ctx, cmNum(tv, 1) + ' °C', a.right - 2, cur.y, 'right', TEMP_COLOR);
+      }
+      var tb = cmBadge(ctx, formatLabel(new Date(t)), cur.x, a.bottom - 11, 'center', ink);
+
+      // readout box
+      if (items.length) {
+        // narrow charts (phones): smaller text, box pinned to the top so the finger does not hide it
+        var narrow = (a.right - a.left) < 480;
+        var fs = narrow ? 11 : 12;
+        ctx.font = "600 " + fs + "px 'Barlow', sans-serif";
+        var lineH = narrow ? 15 : 17, pad = narrow ? 6 : 8;
+        var title = formatLabel(new Date(t));
+        var w = ctx.measureText(title).width;
+        items.forEach(function(it) {
+          var tw = ctx.measureText(it.name + ' : ' + it.text).width + 14;
+          if (tw > w) w = tw;
+        });
+        w += pad * 2;
+        var h = pad * 2 + lineH * (items.length + 1) - 3;
+        var bx = cur.x + 14, by = cur.y + 14;
+        if (bx + w > a.right) bx = cur.x - 14 - w;
+        if (bx < a.left) bx = Math.max(a.left, Math.min(a.right - w, cur.x - w / 2));
+        if (by + h > a.bottom - 22) by = cur.y - 14 - h;
+        if (by < a.top) by = a.top + 2;
+        if (narrow) {
+          by = a.top + 2;
+          bx = cur.x < (a.left + a.right) / 2 ? Math.min(a.right - w, cur.x + 10) : Math.max(a.left, cur.x - 10 - w);
+          if (w > a.right - a.left) bx = a.left;
+        }
+        ctx.fillStyle = 'rgba(24,34,38,0.94)';
+        cmRoundRect(ctx, bx, by, w, h, 7); ctx.fill();
+        ctx.textAlign = 'left'; ctx.textBaseline = 'middle';
+        ctx.fillStyle = '#FFFFFF';
+        ctx.fillText(title, bx + pad, by + pad + lineH / 2 - 2);
+        items.forEach(function(it, k) {
+          var yy = by + pad + lineH * (k + 1) + lineH / 2 - 2;
+          ctx.fillStyle = it.color;
+          ctx.fillRect(bx + pad, yy - 4, 8, 8);
+          ctx.fillStyle = '#E3EAE6';
+          ctx.font = "500 " + fs + "px 'Barlow', sans-serif";
+          ctx.fillText(it.name + ' : ', bx + pad + 14, yy);
+          var nw = ctx.measureText(it.name + ' : ').width;
+          ctx.fillStyle = '#FFFFFF';
+          ctx.font = "700 " + fs + "px 'Barlow', sans-serif";
+          ctx.fillText(it.text, bx + pad + 14 + nw, yy);
+          ctx.font = "600 " + fs + "px 'Barlow', sans-serif";
+        });
+      }
+      ctx.restore();
+    }
+  };
+  Chart.register(cursorPlugin);
+  try { Chart.defaults.plugins.tooltip.enabled = false; } catch (e) {}
+
+
   // ---- displacement-rate chart (mm/h) ---------------------------------------
   // Each point is the slope of a least-squares line fitted on the position
   // readings of the PRECEDING window (6 h by default): exactly the quantity an
   // alert rule based on "speed over the last N hours" looks at, through time.
   var velCanvas = document.getElementById('chartVelocity');
-  var vel = { chart: null, range: 'all', windowH: 6, showRaw: false, showThr: false, points: [] };
+  var vel = { chart: null, range: 'all', windowH: 6, showRaw: false, showThr: false, showTemp: false, tempData: null, points: [] };
   var VEL_THRESHOLDS = [1, 2, 5];
   var HOUR_MS = 3600000;
 
@@ -4042,6 +4451,17 @@ window.CM_UI = {
     }
     var first = shown[0].x.getTime(), lastT = shown[shown.length - 1].x.getTime();
     var padX = Math.max((lastT - first) * 0.01, 60000);
+    // optional temperature (measured + MeteoSwiss forecast) on a right-hand axis
+    var xMaxAuto = lastT + padX;
+    var tempOn = vel.showTemp && vel.tempData && vel.tempData.length;
+    if (tempOn) {
+      xMaxAuto = extendForTempFc(xMaxAuto, vel.tempData, shown);
+      var tFrom = first - padX - 3600000, tTo = xMaxAuto;
+      var tIn = vel.tempData.filter(function(p) { var tt = p.x.getTime(); return tt >= tFrom && tt <= tTo; });
+      if (tIn.length) datasets.push(makeTempDataset(tIn));
+      var fc = tempFcFor(vel.tempData);
+      if (fc) datasets.push(makeTempFcDataset(fc));
+    }
     var coarse = window.matchMedia && window.matchMedia('(pointer: coarse)').matches;
     var yScale = {
       ticks: { color: colors.ink, font: { family: 'Barlow', size: 11 } },
@@ -4094,7 +4514,7 @@ window.CM_UI = {
           x: {
             type: 'time',
             min: keep ? keep.min : first - padX,
-            max: keep ? keep.max : lastT + padX,
+            max: keep ? keep.max : xMaxAuto,
             time: {
               tooltipFormat: 'dd.MM.yyyy HH:mm',
               displayFormats: { minute: 'HH:mm', hour: 'dd.MM. HH:mm', day: 'dd.MM.yyyy', week: 'dd.MM.yyyy', month: 'MM.yyyy' }
@@ -4102,7 +4522,8 @@ window.CM_UI = {
             ticks: { color: colors.ink, maxTicksLimit: 8, font: { family: 'Barlow', size: 11 } },
             grid: { display: false }
           },
-          y: yScale
+          y: yScale,
+          yTemp: tempOn ? tempAxisConfig(colors) : { display: false }
         }
       }
     });
@@ -4141,6 +4562,17 @@ window.CM_UI = {
     if (thrBtn) thrBtn.addEventListener('click', function() {
       vel.showThr = !vel.showThr; thrBtn.classList.toggle('active', vel.showThr); renderVelocity(true);
     });
+    var tempBtn = document.querySelector('.vel-temp');
+    if (tempBtn) tempBtn.addEventListener('click', function() {
+      vel.showTemp = !vel.showTemp;
+      tempBtn.classList.toggle('active', vel.showTemp);
+      if (vel.showTemp && !vel.tempData) {
+        loadTempSeries().then(function(td) { vel.tempData = td || []; return loadTempForecast(); })
+          .catch(function() {}).then(function() { renderVelocity(true); });
+      } else {
+        renderVelocity(true);
+      }
+    });
     var rawBtn = document.querySelector('.vel-raw');
     if (rawBtn) rawBtn.addEventListener('click', function() {
       vel.showRaw = !vel.showRaw; rawBtn.classList.toggle('active', vel.showRaw); renderVelocity(true);
@@ -4158,7 +4590,7 @@ window.CM_UI = {
   // battery voltage, displacement rates over 6 h / 24 h / 7 days + raw rate,
   // and an "Infos" sheet describing the content and methods.
   var XL_TEXT = {
-    fr: { info: 'Infos', infoKey: 'Rubrique', infoVal: 'Detail', abs: 'Position absolue', rel: 'Position relative', batt: 'Batterie', vel: 'Vitesses',
+    fr: { info: 'Infos', infoKey: 'Rubrique', infoVal: 'Detail', all: 'Toutes les mesures', period: 'Periode', periodAll: 'Toutes les donnees disponibles', abs: 'Position absolue', rel: 'Position relative', batt: 'Batterie', vel: 'Vitesses',
           date: 'Date-heure (heure locale)', posAbs: 'Position absolue (mm)', posRel: 'Position relative (mm)',
           temp: 'Temperature air GRA (degC)', volt: 'Tension batterie (V)',
           v6: 'Vitesse 6 h (mm/h)', v24: 'Vitesse 24 h (mm/h)', v168: 'Vitesse 7 jours (mm/h)', vraw: 'Vitesse brute (mm/h)',
@@ -4171,7 +4603,7 @@ window.CM_UI = {
             ['Vitesse brute', 'Difference entre deux mesures successives divisee par le temps ecoule'],
             ['Seuils d\'alerte (demo)', '1 / 2 / 5 mm/h, soit 24 / 48 / 120 mm/jour']
           ] },
-    de: { info: 'Infos', infoKey: 'Rubrik', infoVal: 'Detail', abs: 'Position absolut', rel: 'Position relativ', batt: 'Batterie', vel: 'Geschwindigkeiten',
+    de: { info: 'Infos', infoKey: 'Rubrik', infoVal: 'Detail', all: 'Alle Messungen', period: 'Zeitraum', periodAll: 'Alle verfuegbaren Daten', abs: 'Position absolut', rel: 'Position relativ', batt: 'Batterie', vel: 'Geschwindigkeiten',
           date: 'Datum-Zeit (Ortszeit)', posAbs: 'Position absolut (mm)', posRel: 'Position relativ (mm)',
           temp: 'Lufttemperatur GRA (degC)', volt: 'Batteriespannung (V)',
           v6: 'Geschwindigkeit 6 h (mm/h)', v24: 'Geschwindigkeit 24 h (mm/h)', v168: 'Geschwindigkeit 7 Tage (mm/h)', vraw: 'Rohgeschwindigkeit (mm/h)',
@@ -4184,7 +4616,7 @@ window.CM_UI = {
             ['Rohgeschwindigkeit', 'Differenz zweier aufeinanderfolgender Messungen geteilt durch die verstrichene Zeit'],
             ['Alarmschwellen (Demo)', '1 / 2 / 5 mm/h, d.h. 24 / 48 / 120 mm/Tag']
           ] },
-    en: { info: 'Info', infoKey: 'Item', infoVal: 'Detail', abs: 'Absolute position', rel: 'Relative position', batt: 'Battery', vel: 'Rates',
+    en: { info: 'Info', infoKey: 'Item', infoVal: 'Detail', all: 'All readings', period: 'Period', periodAll: 'All available data', abs: 'Absolute position', rel: 'Relative position', batt: 'Battery', vel: 'Rates',
           date: 'Date-time (local time)', posAbs: 'Absolute position (mm)', posRel: 'Relative position (mm)',
           temp: 'Air temperature GRA (degC)', volt: 'Battery voltage (V)',
           v6: 'Rate 6 h (mm/h)', v24: 'Rate 24 h (mm/h)', v168: 'Rate 7 days (mm/h)', vraw: 'Raw rate (mm/h)',
@@ -4298,13 +4730,15 @@ window.CM_UI = {
     return buildZip(entries);
   }
 
-  function buildAllSheets(tempData) {
+  function buildAllSheets(tempData, range) {
     var L = (document.documentElement.lang || 'fr').toLowerCase();
     var T = XL_TEXT[L] || XL_TEXT.fr;
     var raw = store.position.points || [];
     var absPts = raw.filter(function(p) { return typeof p.abs === 'number' && isFinite(p.abs); }).map(function(p) { return { x: p.x, y: p.abs }; });
     var relPts = raw.filter(function(p) { return typeof p.rel === 'number' && isFinite(p.rel); }).map(function(p) { return { x: p.x, y: p.rel }; });
     var battPts = store.battery.points || [];
+    function inRange(p) { var t = p.x.getTime(); return !range || (t >= range.from && t <= range.to); }
+    function ymd(ms) { var q = new Date(ms); return pad4(q.getFullYear()) + '-' + pad(q.getMonth() + 1) + '-' + pad(q.getDate()); }
     var withTemp = !!(tempData && tempData.length);
     // nearest hourly temperature, only if a reading exists within 90 minutes
     function tempAt(t) {
@@ -4322,7 +4756,7 @@ window.CM_UI = {
       name: T.info, headers: [T.infoKey, T.infoVal], widths: [26, 110],
       rows: T.infoRows.map(function(r) {
         return [r[0], r[1].replace('{date}', pad4(d.getFullYear()) + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate()) + ' ' + pad(d.getHours()) + ':' + pad(d.getMinutes()))];
-      })
+      }).concat([[T.period, range ? ymd(range.from) + ' - ' + ymd(range.to) : T.periodAll]])
     });
     function posSheet(name, label, pts) {
       return {
@@ -4332,38 +4766,62 @@ window.CM_UI = {
         rows: pts.map(function(p) { return withTemp ? [p.x, p.y, tempAt(p.x.getTime())] : [p.x, p.y]; })
       };
     }
-    if (absPts.length) sheets.push(posSheet(T.abs, T.posAbs, absPts));
-    if (relPts.length) sheets.push(posSheet(T.rel, T.posRel, relPts));
-    if (battPts.length) sheets.push({ name: T.batt, headers: [T.date, T.volt], widths: [20, 22], rows: battPts.map(function(p) { return [p.x, p.y]; }) });
+    // rates are computed on the full history (so each window has its past), then cut to the period
     var base = absPts.length ? absPts : relPts;
+    var absIn = absPts.filter(inRange), relIn = relPts.filter(inRange), battIn = battPts.filter(inRange);
+    if (absIn.length) sheets.push(posSheet(T.abs, T.posAbs, absIn));
+    if (relIn.length) sheets.push(posSheet(T.rel, T.posRel, relIn));
+    if (battIn.length) sheets.push({ name: T.batt, headers: [T.date, T.volt], widths: [20, 22], rows: battIn.map(function(p) { return [p.x, p.y]; }) });
+    var maps = [{}, {}, {}], rawMap = {};
     if (base.length) {
-      var maps = [6, 24, 168].map(function(h) {
+      maps = [6, 24, 168].map(function(h) {
         var m = {};
         computeVelocity(base, h * HOUR_MS).forEach(function(p) { if (p.y !== null) m[p.x.getTime()] = p.y; });
         return m;
       });
-      var rawMap = {};
       computeRawVelocity(base).forEach(function(p) { rawMap[p.x.getTime()] = p.y; });
       sheets.push({
         name: T.vel, headers: [T.date, T.v6, T.v24, T.v168, T.vraw], widths: [20, 20, 20, 22, 22],
-        rows: base.map(function(p) {
+        rows: base.filter(inRange).map(function(p) {
           var t = p.x.getTime();
           return [p.x, r6(maps[0][t]), r6(maps[1][t]), r6(maps[2][t]), r6(rawMap[t])];
+        })
+      });
+    }
+    // last sheet: every reading on one page, one row per timestamp
+    var byT = {};
+    function slot(p) { var t = p.x.getTime(); return byT[t] || (byT[t] = { x: p.x }); }
+    absIn.forEach(function(p) { slot(p).abs = p.y; });
+    relIn.forEach(function(p) { slot(p).rel = p.y; });
+    battIn.forEach(function(p) { slot(p).batt = p.y; });
+    var times = Object.keys(byT).map(Number).sort(function(a, b) { return a - b; });
+    if (times.length) {
+      var vm = base.length ? maps : [{}, {}, {}];
+      var rm = base.length ? rawMap : {};
+      var hdr = [T.date, T.posAbs, T.posRel, T.volt].concat(withTemp ? [T.temp] : []).concat([T.v6, T.v24, T.v168, T.vraw]);
+      sheets.push({
+        name: T.all, headers: hdr, widths: hdr.map(function(h, i) { return i === 0 ? 20 : 22; }),
+        rows: times.map(function(t) {
+          var r = byT[t];
+          var row = [r.x, r.abs, r.rel, r.batt];
+          if (withTemp) row.push(tempAt(t));
+          return row.concat([r6(vm[0][t]), r6(vm[1][t]), r6(vm[2][t]), r6(rm[t])]);
         })
       });
     }
     return sheets;
   }
 
-  function downloadAllXlsx() {
+  function downloadAllXlsx(range) {
     if (!(store.position.points || []).length && !(store.battery.points || []).length) return;
     function emit(tempData) {
-      var blob = buildWorkbook(buildAllSheets(tempData));
+      var blob = buildWorkbook(buildAllSheets(tempData, range));
       var url = URL.createObjectURL(blob);
       var a = document.createElement('a');
       var d = new Date();
       a.href = url;
-      a.download = 'crackmeter-ermitage-' + pad4(d.getFullYear()) + pad(d.getMonth() + 1) + pad(d.getDate()) + '.xlsx';
+      function stamp(ms) { var q = new Date(ms); return pad4(q.getFullYear()) + pad(q.getMonth() + 1) + pad(q.getDate()); }
+      a.download = 'crackmeter-ermitage-' + (range ? stamp(range.from) + '-' + stamp(range.to) : 'complet-' + stamp(d.getTime())) + '.xlsx';
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
@@ -4376,6 +4834,68 @@ window.CM_UI = {
     }
   }
   window.CM_buildAllSheets = buildAllSheets;
+
+  // ---- download menu: all data or a period ---------------------------------
+  var dlMenu = document.getElementById('dlMenu');
+  var dlBtnEl = document.querySelector('.download-all');
+  function isoDay(dte) { return pad4(dte.getFullYear()) + '-' + pad(dte.getMonth() + 1) + '-' + pad(dte.getDate()); }
+  function closeDlMenu() {
+    if (!dlMenu || dlMenu.hidden) return;
+    dlMenu.hidden = true;
+    if (dlBtnEl) dlBtnEl.setAttribute('aria-expanded', 'false');
+  }
+  function toggleDlMenu() {
+    if (!dlMenu) { downloadAllXlsx(null); return; }
+    if (!dlMenu.hidden) { closeDlMenu(); return; }
+    var pts = (store.position.points || []).concat(store.battery.points || []);
+    var fromEl = document.getElementById('dlFrom'), toEl = document.getElementById('dlTo');
+    if (pts.length && fromEl && toEl) {
+      var tmin = Infinity, tmax = -Infinity;
+      pts.forEach(function(p) { var t = p.x.getTime(); if (t < tmin) tmin = t; if (t > tmax) tmax = t; });
+      fromEl.min = toEl.min = isoDay(new Date(tmin));
+      fromEl.max = toEl.max = isoDay(new Date(tmax));
+      if (!fromEl.value) fromEl.value = isoDay(new Date(Math.max(tmin, tmax - 7 * 86400000)));
+      if (!toEl.value) toEl.value = isoDay(new Date(tmax));
+    }
+    dlMenu.hidden = false;
+    if (dlBtnEl) dlBtnEl.setAttribute('aria-expanded', 'true');
+    var first = dlMenu.querySelector('input[name="dlScope"]:checked');
+    if (first) first.focus();
+  }
+  if (dlMenu) {
+    dlMenu.querySelectorAll('.dl-range input').forEach(function(inp) {
+      inp.addEventListener('focus', function() {
+        var r = dlMenu.querySelector('input[name="dlScope"][value="range"]');
+        if (r) r.checked = true;
+        dlMenu.classList.add('ranged');
+      });
+    });
+    dlMenu.querySelectorAll('input[name="dlScope"]').forEach(function(r) {
+      r.addEventListener('change', function() { dlMenu.classList.toggle('ranged', r.value === 'range' && r.checked); });
+    });
+    dlMenu.querySelector('.dl-go').addEventListener('click', function() {
+      var scope = dlMenu.querySelector('input[name="dlScope"]:checked');
+      var range = null;
+      if (scope && scope.value === 'range') {
+        var f = document.getElementById('dlFrom').value, t = document.getElementById('dlTo').value;
+        if (f && t) {
+          var a = new Date(f + 'T00:00:00').getTime(), b = new Date(t + 'T23:59:59.999').getTime();
+          if (a > b) { var tmp = new Date(t + 'T00:00:00').getTime(); b = new Date(f + 'T23:59:59.999').getTime(); a = tmp; }
+          range = { from: a, to: b };
+        }
+      }
+      downloadAllXlsx(range);
+      closeDlMenu();
+    });
+    document.addEventListener('click', function(e) {
+      if (dlMenu.hidden || !e.target.closest) return;
+      if (e.target.closest('#dlMenu') || e.target.closest('.download-all')) return;
+      closeDlMenu();
+    });
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape' && !dlMenu.hidden) { closeDlMenu(); if (dlBtnEl) dlBtnEl.focus(); }
+    });
+  }
   window.CrackmeterLive = { store: store, posMode: posMode, refresh: refreshAll, liveMeta: liveMeta };
   refreshAll();
   setInterval(refreshAll, POLL_INTERVAL);
