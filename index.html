@@ -2980,19 +2980,29 @@ window.CM_UI = {
       })
         .filter(function(p) { return isFinite(p.x.getTime()) && isFinite(p.y) && p.x.getTime() >= now - 2 * 3600000; });
     }
-    // try the copy served with the page first, then the raw file on GitHub
-    // (useful when the Pages copy has not been rebuilt since the last update)
-    function attempt(i) {
-      if (i >= TEMP_FC_URLS.length) return Promise.resolve(null);
-      return fetch(TEMP_FC_URLS[i], { cache: 'no-cache' }).then(function(res) {
-        return res.ok ? res.json() : null;
-      }).catch(function() { return null; }).then(function(doc) {
-        var pts = parse(doc);
-        if (pts.length >= 24) return { doc: doc, pts: pts };
-        return attempt(i + 1);
+    // fetch both copies (the one published with the page and the raw file on
+    // GitHub) without any cache, and keep the most recent forecast run
+    function load(url) {
+      var sep = url.indexOf('?') === -1 ? '?' : '&';
+      return fetch(url + sep + 'v=' + Date.now(), { cache: 'no-store' })
+        .then(function(res) { return res.ok ? res.json() : null; })
+        .catch(function() { return null; })
+        .then(function(doc) {
+          var pts = parse(doc);
+          return pts.length >= 6 ? { doc: doc, pts: pts, run: doc && doc.run ? new Date(doc.run).getTime() : 0 } : null;
+        });
+    }
+    function attempt() {
+      return Promise.all(TEMP_FC_URLS.map(load)).then(function(res) {
+        var best = null;
+        res.forEach(function(r) {
+          if (!r) return;
+          if (!best || r.run > best.run || (r.run === best.run && r.pts.length > best.pts.length)) best = r;
+        });
+        return best;
       });
     }
-    return attempt(0).then(function(r) {
+    return attempt().then(function(r) {
       tempFc.data = r ? r.pts : [];
       tempFc.run = r && r.doc.run ? new Date(r.doc.run) : null;
       tempFc.status = r ? 'ok' : 'none';
