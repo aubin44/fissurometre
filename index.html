@@ -35,7 +35,7 @@
     --contour: rgba(42,111,151,0.14);
     --data-pos: #2A6F97;
     --data-batt: #58782F;
-    --data-vel: #A8431B;
+    --data-vel: #0E7C74;
     --shadow: rgba(28,41,46,0.9);
     --radius: 10px;
     --maxw: 1120px;
@@ -50,7 +50,7 @@
       --sign: #E7B92B; --sign-ink: #17140A;
       --rock-a: #3A474B; --rock-b: #2B3538; --rock-line: #8796A0;
       --doodle: rgba(227,234,230,0.12); --contour: rgba(107,174,214,0.12);
-      --data-pos: #6BAED6; --data-batt: #9DC266; --data-vel: #F2925A; --shadow: rgba(0,0,0,0.55);
+      --data-pos: #6BAED6; --data-batt: #9DC266; --data-vel: #3CC7B6; --shadow: rgba(0,0,0,0.55);
       color-scheme: dark;
     }
   }
@@ -62,7 +62,7 @@
     --sign: #E7B92B; --sign-ink: #17140A;
     --rock-a: #3A474B; --rock-b: #2B3538; --rock-line: #8796A0;
     --doodle: rgba(227,234,230,0.12); --contour: rgba(107,174,214,0.12);
-    --data-pos: #6BAED6; --data-batt: #9DC266; --data-vel: #F2925A; --shadow: rgba(0,0,0,0.55);
+    --data-pos: #6BAED6; --data-batt: #9DC266; --data-vel: #3CC7B6; --shadow: rgba(0,0,0,0.55);
     color-scheme: dark;
   }
 
@@ -1268,7 +1268,7 @@ window.CM_UI = {
     velSubW: "Pente de la position sur les {w} précédant chaque mesure, en mm/h",
     velSampling: "Intervalle médian entre deux mesures : {dt}, soit environ {n} mesures par fenêtre.",
     velTooFew: "La fenêtre de {w} contient moins de 3 mesures (intervalle médian : {dt}) : choisissez une fenêtre plus longue.",
-    tempFcNote: "Tirets orange sur fond hachuré : prévision MétéoSuisse pour Fribourg/Grangeneuve (calcul du {run}) ; la bande orange donne la fourchette 10–90 % de MétéoSuisse. Trait rouge continu : températures mesurées.",
+    tempFcNote: "Tirets orange : prévision MétéoSuisse pour Fribourg/Grangeneuve (calcul du {run}) ; la bande orange donne la fourchette 10–90 % de MétéoSuisse. Trait rouge continu : températures mesurées.",
     fcZone: "Prévision météo",
     dlAll: "Télécharger tout (Excel)",
     velRawNote: "Points gris : vitesse brute entre deux mesures successives ({out} hors de l'échelle).",
@@ -1342,7 +1342,7 @@ window.CM_UI = {
     velSubW: "Steigung der Position über die {w} vor jeder Messung, in mm/h",
     velSampling: "Medianer Abstand zwischen zwei Messungen: {dt}, also etwa {n} Messungen pro Fenster.",
     velTooFew: "Das Fenster von {w} enthält weniger als 3 Messungen (medianer Abstand: {dt}): bitte ein längeres Fenster wählen.",
-    tempFcNote: "Orange gestrichelt auf schraffiertem Hintergrund: MeteoSchweiz-Prognose für Freiburg/Grangeneuve (Lauf vom {run}); das orange Band zeigt den 10–90-%-Bereich von MeteoSchweiz. Rote durchgezogene Linie: gemessene Temperaturen.",
+    tempFcNote: "Orange gestrichelt: MeteoSchweiz-Prognose für Freiburg/Grangeneuve (Lauf vom {run}); das orange Band zeigt den 10–90-%-Bereich von MeteoSchweiz. Rote durchgezogene Linie: gemessene Temperaturen.",
     fcZone: "Wetterprognose",
     dlAll: "Alles herunterladen (Excel)",
     velRawNote: "Graue Punkte: Rohgeschwindigkeit zwischen zwei aufeinanderfolgenden Messungen ({out} außerhalb der Skala).",
@@ -1416,7 +1416,7 @@ window.CM_UI = {
     velSubW: "Slope of the position over the {w} before each reading, in mm/h",
     velSampling: "Median interval between two readings: {dt}, i.e. about {n} readings per window.",
     velTooFew: "The {w} window holds fewer than 3 readings (median interval: {dt}): choose a longer window.",
-    tempFcNote: "Orange dashes on a hatched background: MeteoSwiss forecast for Fribourg/Grangeneuve (run of {run}); the orange band is the MeteoSwiss 10–90 % range. Solid red line: measured temperatures.",
+    tempFcNote: "Orange dashes: MeteoSwiss forecast for Fribourg/Grangeneuve (run of {run}); the orange band is the MeteoSwiss 10–90 % range. Solid red line: measured temperatures.",
     fcZone: "Weather forecast",
     dlAll: "Download everything (Excel)",
     velRawNote: "Grey dots: raw rate between two successive readings ({out} off the scale).",
@@ -2921,19 +2921,6 @@ window.CM_UI = {
       var x1 = Math.min(a.right, xs.getPixelForValue(ds.data[ds.data.length - 1].x.getTime()));
       if (x1 <= x0) return;
       var ctx = chart.ctx;
-      ctx.save();
-      ctx.fillStyle = 'rgba(224,144,26,0.07)';
-      ctx.fillRect(x0, a.top, x1 - x0, a.bottom - a.top);
-      // light diagonal hatching
-      ctx.beginPath();
-      ctx.rect(x0, a.top, x1 - x0, a.bottom - a.top);
-      ctx.clip();
-      ctx.strokeStyle = 'rgba(224,144,26,0.16)';
-      ctx.lineWidth = 1;
-      for (var hx = x0 - (a.bottom - a.top); hx < x1; hx += 9) {
-        ctx.beginPath(); ctx.moveTo(hx, a.bottom); ctx.lineTo(hx + (a.bottom - a.top), a.top); ctx.stroke();
-      }
-      ctx.restore();
       // 10-90 % range of the forecast (official MeteoSwiss quantiles)
       var yt = chart.scales.yTemp;
       var band = ds.data.filter(function(p) { return typeof p.lo === 'number' && typeof p.hi === 'number'; });
@@ -2953,18 +2940,6 @@ window.CM_UI = {
         ctx.fill();
         ctx.restore();
       }
-      ctx.save();
-      ctx.strokeStyle = TEMP_FC_COLOR;
-      ctx.setLineDash([3, 3]);
-      ctx.beginPath(); ctx.moveTo(Math.round(x0) + 0.5, a.top); ctx.lineTo(Math.round(x0) + 0.5, a.bottom); ctx.stroke();
-      ctx.setLineDash([]);
-      var L = document.documentElement.lang || 'fr';
-      var d = (window.CM_UI && (window.CM_UI[L] || window.CM_UI.fr)) || {};
-      ctx.fillStyle = TEMP_FC_COLOR;
-      ctx.font = "600 11px 'Barlow', sans-serif";
-      ctx.textAlign = 'left';
-      if (x1 - x0 > 70) ctx.fillText(d.fcZone || '', x0 + 6, a.top + 13);
-      ctx.restore();
     }
   };
   Chart.register(tempFcZonePlugin);
@@ -4437,7 +4412,7 @@ window.CM_UI = {
     }
 
     var colors = getColors();
-    var color = cssVar('--data-vel', '#A8431B');
+    var color = cssVar('--data-vel', '#0E7C74');
     var datasets = [{
       label: 'velocity', data: shown, borderColor: color, backgroundColor: areaFill, fill: 'origin',
       borderWidth: 2, pointRadius: shownVals.length < 60 ? 2 : 0, pointHoverRadius: 4,
