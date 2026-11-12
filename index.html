@@ -2,8 +2,15 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="theme-color" content="#1C292E">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Crackmeter">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
 <title data-i18n="doc.title">Fissuromètre connecté — Crackmeter</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -646,6 +653,34 @@
     .pulse-cell dd { font-size: 1.3rem; }
     .qr-row img { width: 64px; height: 64px; }
   }
+
+  /* ---------- installable app ---------- */
+  html.standalone header { padding-top: env(safe-area-inset-top); }
+  html.standalone .headbar { padding-left: max(16px, env(safe-area-inset-left)); padding-right: max(16px, env(safe-area-inset-right)); }
+  html.standalone .mobile-tabbar { padding-left: max(4px, env(safe-area-inset-left)); padding-right: max(4px, env(safe-area-inset-right)); }
+  .install-banner {
+    position: fixed; z-index: 70; left: 12px; right: 12px; bottom: 16px; max-width: 520px; margin: 0 auto;
+    display: grid; grid-template-columns: 40px 1fr auto auto; gap: 12px; align-items: center;
+    background: var(--panel); color: var(--ink); border: 2px solid var(--ink); border-radius: 14px;
+    box-shadow: 6px 6px 0 var(--shadow); padding: 12px 10px 12px 12px;
+    transform: translateY(140%); transition: transform .4s cubic-bezier(.25,.8,.3,1);
+  }
+  .install-banner.show { transform: none; }
+  .install-banner img { border-radius: 9px; display: block; }
+  .ib-text { margin: 0; font-size: 0.9rem; line-height: 1.35; font-weight: 500; }
+  .share-ico { width: 17px; height: 17px; vertical-align: -3px; fill: none; stroke: var(--glacier); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+  .ib-go { padding: 8px 14px; font-size: 0.88rem; }
+  .ib-go[hidden] { display: none; }
+  .ib-close { width: 36px; height: 36px; border: 0; background: transparent; color: var(--stone); cursor: pointer; border-radius: 50%; display: grid; place-items: center; }
+  .ib-close:hover { background: color-mix(in srgb, var(--ink) 8%, transparent); color: var(--ink); }
+  .ib-close svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; }
+  @media (max-width: 900px) { .install-banner { bottom: calc(80px + env(safe-area-inset-bottom)); } }
+  .offline-banner {
+    position: fixed; z-index: 35; left: 0; right: 0; margin: 0 auto; width: fit-content; top: calc(64px + env(safe-area-inset-top)); transform: translateY(-12px);
+    background: var(--ink); color: var(--paper); font-size: 0.85rem; font-weight: 600; padding: 7px 14px; border-radius: 999px;
+    opacity: 0; pointer-events: none; transition: opacity .25s, transform .25s; max-width: calc(100vw - 32px); text-align: center;
+  }
+  .offline-banner.show { opacity: 1; transform: none; }
 </style>
 </head>
 <body>
@@ -1237,6 +1272,11 @@ window.CM_TAB_ICONS = {"peak": "<svg viewBox=\"0 0 24 24\" aria-hidden=\"true\" 
 /* ---------- UI strings added by the redesign (fr / de / en) ---------- */
 window.CM_UI = {
   fr: {
+    installIos: "Installez Crackmeter sur votre iPhone : touchez {share} Partager, puis « Sur l'écran d'accueil ».",
+    installOther: "Installez Crackmeter sur votre téléphone pour l'ouvrir comme une application.",
+    installBtn: "Installer",
+    installClose: "Fermer",
+    offline: "Hors ligne — dernières données enregistrées",
     touchHint: "Touchez le graphique pour lire les valeurs ; pincez pour zoomer.",
     dlBtn: "Téléchargement",
     dlTitle: "Fichier Excel",
@@ -1311,6 +1351,11 @@ window.CM_UI = {
     next: "Suite : {tab}"
   },
   de: {
+    installIos: "Crackmeter auf dem iPhone installieren: {share} Teilen antippen, dann « Zum Home-Bildschirm ».",
+    installOther: "Crackmeter auf dem Telefon installieren, um es wie eine App zu öffnen.",
+    installBtn: "Installieren",
+    installClose: "Schliessen",
+    offline: "Offline — zuletzt gespeicherte Daten",
     touchHint: "Diagramm antippen, um die Werte zu lesen; mit zwei Fingern zoomen.",
     dlBtn: "Download",
     dlTitle: "Excel-Datei",
@@ -1385,6 +1430,11 @@ window.CM_UI = {
     next: "Weiter: {tab}"
   },
   en: {
+    installIos: "Install Crackmeter on your iPhone: tap {share} Share, then “Add to Home Screen”.",
+    installOther: "Install Crackmeter on your phone to open it like an app.",
+    installBtn: "Install",
+    installClose: "Close",
+    offline: "Offline — last saved data",
     touchHint: "Touch the chart to read the values; pinch to zoom.",
     dlBtn: "Download",
     dlTitle: "Excel file",
@@ -1864,6 +1914,88 @@ window.CM_UI = {
     }, 1500);
   });
   render();
+})();
+
+/* ---------- installable app: service worker, install help, offline banner ---------- */
+(function() {
+  function lang() { return (document.documentElement.lang || 'fr').toLowerCase(); }
+  function ui(key) { var d = window.CM_UI[lang()] || window.CM_UI.fr; return d[key] || window.CM_UI.fr[key] || ''; }
+  var secure = location.protocol === 'https:' || location.hostname === 'localhost' || location.hostname === '127.0.0.1';
+  if ('serviceWorker' in navigator && secure) {
+    window.addEventListener('load', function() {
+      navigator.serviceWorker.register('sw.js').catch(function() {});
+    });
+  }
+
+  var standalone = (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) || window.navigator.standalone === true;
+  if (standalone) document.documentElement.classList.add('standalone');
+  var ua = navigator.userAgent || '';
+  var isIos = /iPhone|iPad|iPod/.test(ua) || (/Macintosh/.test(ua) && navigator.maxTouchPoints > 1);
+  var SHARE_ICON = '<svg class="share-ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 15V3M8 7l4-4 4 4"/><path d="M6 11H5v10h14V11h-1"/></svg>';
+  function dismissed() { try { return localStorage.getItem('cm-install-dismissed') === '1'; } catch (e) { return false; } }
+  function remember() { try { localStorage.setItem('cm-install-dismissed', '1'); } catch (e) {} }
+
+  var banner = null, deferredPrompt = null;
+  function renderBanner() {
+    if (!banner) return;
+    var txt = banner.querySelector('.ib-text');
+    if (deferredPrompt) {
+      txt.textContent = ui('installOther');
+    } else {
+      txt.innerHTML = ui('installIos').replace('{share}', SHARE_ICON);
+    }
+    var go = banner.querySelector('.ib-go');
+    go.hidden = !deferredPrompt;
+    go.textContent = ui('installBtn');
+    banner.querySelector('.ib-close').setAttribute('aria-label', ui('installClose'));
+  }
+  function showBanner() {
+    if (standalone || dismissed() || banner) return;
+    banner = document.createElement('div');
+    banner.className = 'install-banner';
+    banner.setAttribute('role', 'region');
+    banner.setAttribute('aria-label', 'Installation');
+    banner.innerHTML = '<img src="icons/icon-192.png" alt="" width="40" height="40">' +
+      '<p class="ib-text"></p><button type="button" class="btn ib-go" hidden></button>' +
+      '<button type="button" class="ib-close"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></button>';
+    document.body.appendChild(banner);
+    renderBanner();
+    requestAnimationFrame(function() { banner.classList.add('show'); });
+    banner.querySelector('.ib-close').addEventListener('click', function() { remember(); banner.remove(); banner = null; });
+    banner.querySelector('.ib-go').addEventListener('click', function() {
+      if (!deferredPrompt) return;
+      deferredPrompt.prompt();
+      deferredPrompt.userChoice.then(function() { remember(); if (banner) { banner.remove(); banner = null; } deferredPrompt = null; });
+    });
+  }
+  // Android / Chrome: real install prompt
+  window.addEventListener('beforeinstallprompt', function(e) {
+    e.preventDefault();
+    deferredPrompt = e;
+    setTimeout(showBanner, 2500);
+    renderBanner();
+  });
+  window.addEventListener('appinstalled', function() { remember(); if (banner) { banner.remove(); banner = null; } });
+  // iPhone / iPad: Safari has no prompt, explain the two taps instead
+  if (isIos && !standalone) setTimeout(showBanner, 3000);
+
+  // offline banner + refresh when the connection comes back
+  var off = document.createElement('div');
+  off.className = 'offline-banner';
+  off.setAttribute('role', 'status');
+  document.body.appendChild(off);
+  function syncOnline() {
+    var isOff = navigator.onLine === false;
+    off.textContent = ui('offline');
+    off.classList.toggle('show', isOff);
+  }
+  window.addEventListener('offline', syncOnline);
+  window.addEventListener('online', function() {
+    syncOnline();
+    if (window.CrackmeterLive) window.CrackmeterLive.refresh();
+  });
+  window.addEventListener('cm:langchange', function() { syncOnline(); renderBanner(); });
+  syncOnline();
 })();
 
 </script>

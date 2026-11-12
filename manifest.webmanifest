@@ -1,0 +1,22 @@
+{
+  "name": "Crackmeter — Ermitage de la Madelaine",
+  "short_name": "Crackmeter",
+  "description": "Fissuromètre connecté : position de la fissure, vitesses, batterie et température en direct.",
+  "lang": "fr",
+  "id": "./",
+  "start_url": "./?source=app",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#E7ECE6",
+  "theme_color": "#1C292E",
+  "categories": ["utilities", "weather"],
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ],
+  "shortcuts": [
+    { "name": "Données en direct", "short_name": "Données", "url": "./#donnees", "icons": [{ "src": "icons/icon-192.png", "sizes": "192x192" }] }
+  ]
+}
